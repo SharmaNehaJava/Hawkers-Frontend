@@ -1,23 +1,107 @@
+import React, { useState } from 'react';
 
-function Nav() {
+const Navbar = () => {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [location, setLocation] = useState('');
+  const [manualLocation, setManualLocation] = useState('');
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
+  const detectLocation = () => {
+    // Dummy detection logic. Replace with actual geolocation logic if needed.
+    setManualLocation('Detected Location');
+  };
+
+  const saveLocation = () => {
+    setLocation(manualLocation ? manualLocation : 'Detected Location');
+    setIsDropdownOpen(false);
+  };
+
+  const[hidden, setHidden] = useState(true);
+  const search= ()=>{
+    setHidden(!hidden);
+  }
+
   return (
-   <div className="p-2 flex justify-between item-center">
-    <div>
-    <span className="text-yellow-500 font-bold text-lg ">Hawkers</span>
+    <div className="p-2 flex justify-between items-center bg-yellow-400 space-x-4">
+      <div className='flex'>
+      <div>
+        <span className="text-white font-bold text-lg ml-2">Hawkers</span>
+      </div>
+
+      <div className=" flex flex-col items-center text-center relative ml-2">
+        <div className="font-bold text-slate-800 text-xl">Locate nearby Hawkers</div>
+        <div className="flex items-center">
+          <span className="text-sm text-gray-600 mr-2">{location || 'No location selected'}</span>
+          <button onClick={toggleDropdown} className="focus:outline-none">
+            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+          </button>
+        </div>
+        {isDropdownOpen && (
+          <div className="absolute top-full mt-2 w-64 bg-white border border-gray-300 rounded-lg p-4 shadow-lg z-10">
+            <input
+              type="text"
+              value={manualLocation}
+              onChange={(e) => setManualLocation(e.target.value)}
+              placeholder="Type your location here"
+              className="w-full p-2 mb-2 rounded border border-gray-300"
+            />
+            <button
+              onClick={detectLocation}
+              className="w-full p-2 bg-blue-700 text-white rounded mb-2 hover:bg-blue-600 transition duration-500 "
+            >
+              Detect My Current Location
+            </button>
+            <button
+              onClick={saveLocation}
+              className="w-full p-2 bg-green-700 text-white rounded hover:bg-green-600 transition duration-500"
+            >
+              Save Location
+            </button>
+          </div>
+        )}
+      </div>
+      </div>
+      {!hidden && (
+      <div className='bg-white flex p-1 w-2/4 '>
+         <img
+            className="h-8 cursor-pointer m-auto"
+            src="https://img.icons8.com/ios/50/search--v1.png"
+            alt="search"
+            />
+        <input
+          type="text"
+          placeholder="Search Your Item Here"
+          className="w-full p-2 rounded border border-gray-300 "
+        />
+            <img onClick={search} className='h-8 m-auto' src="https://img.icons8.com/ios/50/multiply.png" alt="multiply"/>
+        </div>
+      )}
+      <div className='flex '>
+        
+          {hidden && (
+            <div className='bg-white p-2 rounded-full mr-2 flex-end'>
+            <img
+            onClick={search}
+            className="h-8 cursor-pointer"
+            src="https://img.icons8.com/ios/50/search--v1.png"
+            alt="search"
+            />
+            </div>
+          )}
+          <button className="mr-2 hover:bg-green-600 p-1  bg-green-700 text-white font-bold py-2 px-4 rounded-full transition duration-500 cursor-pointer">Sign in</button>
+
+          <div className="bg-white rounded-full p-2 ">
+              <img className='h-8' src="https://img.icons8.com/ios/50/shopping-cart--v1.png" alt="shopping-cart--v1"/>
+          </div>
+        
+      </div>
     </div>
+  );
+};
 
-    <div>
-    <div className="font-bold text-slate-800 text-xl">Locate nearby Hawkers</div>
-    <div></div>
-    </div>
-
-
-    <input type="text" placeholder="search Your Item Here"></input>
-    <h2>Login</h2>
-    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAACXBIWXMAAAsTAAALEwEAmpwYAAADy0lEQVR4nNWXX2hbVRzHjwNB0Be3N//CnmUIXRvbZU27ZMm9SYvWmQfF9p77LzlnE+kcqE8WRB9EJoIMEQRRUHxw6sOW3T9tkntvcruu6uYmWyudWO3ipjZrm6ZtmjQ/yXCgg23NTTKvH/g+3MP93fPhd8+9h4PQ/4FO5UCfT6P5Hp3A3rQIjIXzjImTrDXEIjfg08n82d8kOJOTwKeRPyPWc/eHDfwka+ILrIXfcIXgmZwEp/8WvD4etMWtjIWnQwYO/aeCXVo8XJOsye1Syb9eK2NhjrHwF8it+CcGtzEWvooA3YXcCmvhXNDADyO3EjT4mUBS0jwKOdSeiA94EnSHL7X/PuQW9qaFb5/PitXDZ2PlF0/GiwPpeKFLJeVujRSYMTIdHqOJ3Wr8zXaVcJ7Efm+XduCBOyroT8kfPmsLZSgK8M8sLQpw4YoIoz9L8Mm0DK9/FyviTHw+NEYWOxVS7tHI5YBOJro18pFHoa90nKBRj0rbdqiH7m2qYG9KHgybfOVGQbhF1gsCzM2LcOqSBF9dlOHdc/Lq8EQsvy8dz+9S6bpXo0W/Tn70j5LjHoW85VFp7IkTNLBTp9vr76A+uI0xMZQKmxeEW2RjWYDcvAiTOQm+vijDez/Eyi9NxhajBlno1siaV6GrPpWadUmGDFwZzzVHEG6TozMy+Efp8boE2bTw+5Hz4h0RfHUyttyRoGJdgoGUaA5PCtWbPdSj0Iaur6daFKBXJytteuyRugT3JIV3ohl+vdWCU1ck6NXpXF1y1zqYFCKMiTdaLfjxlLzRq9EP6hb0pUbuqX3J+QWxpYJCNr7QrpA+5ISQwZf02dZ1cHVJAK9KSo63UcYUfnn7XOs6aM9JEBglp5FT9qQEhZwSK60SPPy9XPJq9DXHgj1JaWQgw5dbJfhUMr60M0HbHQv6daGTNfBN/4XQQP64KsJujRTQyMgWx4II0BbGxNVf883fUY79JNfW3zHUKCGDLx6daa5gcUkAPhNf7lDoUMOCwbQ45RuTr60hT5PSqdKKXydftn0Tu7thQdbCLzAmfh+5FcbkfYyFM8itBG1xK2txC+4+hprcJVcfQ1mLU0IGF0FuhTW5l1mLO4LcSsQeepAxucvhDPc4ciuMNTRQk2RMnjIp6SHkRiJZ4TEmgxNP23ypP4thn80Da+FNpXbvjTUtkYyO8xOfz5KN1fIwfDZLK8/Y/HgrahzTn+HWVsoHAaoHYaU8DP0ZvNaKGsdEbXyy1oXahJ/Oks110EGNY8JZ4dHaBLWuRG3e7rMGb3uedVLjWv4CFfx30+gfpvEAAAAASUVORK5CYII="/>
-    
-   </div>
-  )
-}
-
-export default Nav
+export default Navbar;
