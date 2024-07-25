@@ -1,6 +1,6 @@
 import React from 'react'
 
-const PlaceOrder = () => {
+const SignInVendor = () => {
   return (
     <div>
       
@@ -8,4 +8,4 @@ const PlaceOrder = () => {
   )
 }
 
-export default PlaceOrder
+export default SignInVendor;

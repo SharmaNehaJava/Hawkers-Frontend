@@ -1,107 +1,99 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import axiosInstance from '../api/apiInstances';
+import ProfileComponent from '../Components/ProfileDropdown'; // Make sure to import the new component
+import '../CSS/Nav.css'; // You can remove this if it's unnecessary
+import { motion } from 'framer-motion';
 
-const Navbar = () => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [location, setLocation] = useState('');
-  const [manualLocation, setManualLocation] = useState('');
+const Nav = () => {
+  const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
+  const [hidden, setHidden] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [profileImage, setProfileImage] = useState(null);
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
-  const toggleDropdown = () => {
-    setIsDropdownOpen(!isDropdownOpen);
+  useEffect(() => {
+    const userInfo = localStorage.getItem('userInfo');
+    if (userInfo) {
+      setIsLoggedIn(true);
+      const storedUserInfo = JSON.parse(userInfo);
+      setProfileImage(storedUserInfo.profileImage);
+      setUser(storedUserInfo);
+    }
+  }, []);
+
+  const toggleProfileDropdown = () => {
+    setIsProfileDropdownOpen(!isProfileDropdownOpen);
   };
 
-  const detectLocation = () => {
-    // Dummy detection logic. Replace with actual geolocation logic if needed.
-    setManualLocation('Detected Location');
-  };
-
-  const saveLocation = () => {
-    setLocation(manualLocation ? manualLocation : 'Detected Location');
-    setIsDropdownOpen(false);
-  };
-
-  const[hidden, setHidden] = useState(true);
-  const search= ()=>{
+  const search = () => {
     setHidden(!hidden);
-  }
+  };
+
+  const signOut = () => {
+    setIsLoggedIn(false);
+    localStorage.removeItem('userInfo');
+  };
 
   return (
-    <div className="p-2 flex justify-between items-center bg-yellow-400 space-x-4">
-      <div className='flex'>
-      <div>
-        <span className="text-white font-bold text-lg ml-2">Hawkers</span>
+    <div className="p-1 flex justify-between items-center bg-white space-x-4 bg-yellow-200">
+      <div className="flex bg-white rounded-full ">
+        <span className="text-yellow-500 w-14">
+          <img src="./public/Dark.png" alt="Logo" />
+        </span>
       </div>
 
-      <div className=" flex flex-col items-center text-center relative ml-2">
-        <div className="font-bold text-slate-800 text-xl">Locate nearby Hawkers</div>
-        <div className="flex items-center">
-          <span className="text-sm text-gray-600 mr-2">{location || 'No location selected'}</span>
-          <button onClick={toggleDropdown} className="focus:outline-none">
-            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path>
-            </svg>
-          </button>
-        </div>
-        {isDropdownOpen && (
-          <div className="absolute top-full mt-2 w-64 bg-white border border-gray-300 rounded-lg p-4 shadow-lg z-10">
-            <input
-              type="text"
-              value={manualLocation}
-              onChange={(e) => setManualLocation(e.target.value)}
-              placeholder="Type your location here"
-              className="w-full p-2 mb-2 rounded border border-gray-300"
-            />
-            <button
-              onClick={detectLocation}
-              className="w-full p-2 bg-blue-700 text-white rounded mb-2 hover:bg-blue-600 transition duration-500 "
-            >
-              Detect My Current Location
-            </button>
-            <button
-              onClick={saveLocation}
-              className="w-full p-2 bg-green-700 text-white rounded hover:bg-green-600 transition duration-500"
-            >
-              Save Location
-            </button>
-          </div>
-        )}
-      </div>
-      </div>
       {!hidden && (
-      <div className='bg-white flex p-1 w-2/4 '>
-         <img
-            className="h-8 cursor-pointer m-auto"
-            src="https://img.icons8.com/ios/50/search--v1.png"
-            alt="search"
-            />
-        <input
-          type="text"
-          placeholder="Search Your Item Here"
-          className="w-full p-2 rounded border border-gray-300 "
-        />
-            <img onClick={search} className='h-8 m-auto' src="https://img.icons8.com/ios/50/multiply.png" alt="multiply"/>
+        <div className="flex m-1 shadow-inner">
+          <input
+            className="input rounded-full px-20 py-3 border-2 border-transparent focus:outline-none focus:border-blue-500 placeholder-gray-400 transition-all duration-300 shadow-md  mb-1"
+            placeholder="Search..."
+            required=""
+            type="text"
+          />
+          <img onClick={search} className="h-8 m-auto" src="https://img.icons8.com/ios/50/multiply.png" alt="multiply" />
         </div>
       )}
-      <div className='flex '>
-        
-          {hidden && (
-            <div className='bg-white p-2 rounded-full mr-2 flex-end'>
-            <img
-            onClick={search}
-            className="h-8 cursor-pointer"
-            src="https://img.icons8.com/ios/50/search--v1.png"
-            alt="search"
-            />
-            </div>
-          )}
-          <button className="mr-2 hover:bg-green-600 p-1  bg-green-700 text-white font-bold py-2 px-4 rounded-full transition duration-500 cursor-pointer">Sign in</button>
 
-          <div className="bg-white rounded-full p-2 ">
-              <img className='h-8' src="https://img.icons8.com/ios/50/shopping-cart--v1.png" alt="shopping-cart--v1"/>
+      <div className="flex">
+        {hidden && (
+          <div className="bg-white p-2 rounded-full mr-2 flex-end">
+            <img
+              onClick={search}
+              className="h-8 cursor-pointer"
+              src="https://img.icons8.com/ios/50/search--v1.png"
+              alt="search"
+            />
           </div>
+        )}
+
         
+        {isLoggedIn ? (
+          <div className="relative">
+            <div className={`bg-white rounded-full p-2 cursor-pointer ${window.location.pathname === '/profile' ? 'ring-2 ring-blue-500' : ''}`} onClick={toggleProfileDropdown}>
+              {profileImage ? (
+                <img className="h-8 cursor-pointer rounded-full" src={profileImage} alt="User Profile" />
+              ) : (
+                <div className="h-8 w-8 bg-blue-500 text-white rounded-full flex items-center justify-center cursor-pointer">
+                  {user.name.charAt(0).toUpperCase()}
+                </div>
+              )}
+            </div>
+            {isProfileDropdownOpen && <ProfileComponent user={user} onLogout={signOut} />}
+          </div>
+        ) : (
+          <Link to="/signin" className=" bg-yellow-500 text-white  rounded-full px-4 flex items-center"
+          >
+            Sign In
+          </Link>
+        )}
+        <div className="bg-white rounded-full p-2 ">
+          <img className="h-8" src="https://img.icons8.com/ios/50/shopping-cart--v1.png" alt="shopping-cart" />
+        </div>
       </div>
     </div>
   );
 };
 
-export default Navbar;
+export default Nav;

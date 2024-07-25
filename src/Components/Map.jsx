@@ -1,31 +1,93 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import L from 'leaflet';
+import axios from 'axios';
+import 'leaflet/dist/leaflet.css';
+import io from 'socket.io-client';
+import VendorDetails from './VendorDetails';
+import Cart from './Cart';
 
-const MapComponent = () => {
+const socket = io('http://localhost:3000');
+
+const Map = () => {
+  const [vendors, setVendors] = useState([]);
+  const [map, setMap] = useState(null);
+  const [selectedVendor, setSelectedVendor] = useState(null);
+  const [cartItems, setCartItems] = useState([]);
+
   useEffect(() => {
-    const script = document.createElement('script');
-    script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyA12LRapAG9oCxOUoVV59Cs9Ba5frkO4EM&callback=initMap`;
-    script.async = true;
-    document.head.appendChild(script);
+    const fetchData = async () => {
+      try {
+        const position = await getCurrentPosition();
+        const { latitude, longitude } = position.coords;
 
-    window.initMap = () => {
-      const map = new google.maps.Map(document.getElementById('map'), {
-        center: { lat: -3.745, lng: -38.523 },
-        zoom: 10,
-      });
+        const mapInstance = L.map('map').setView([latitude, longitude], 14);
+        setMap(mapInstance);
 
-      const marker = new google.maps.marker.AdvancedMarkerElement({
-        map,
-        position: { lat: -3.745, lng: -38.523 },
-        title: 'Hello World!',
-      });
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(mapInstance);
+
+        const userMarker = L.marker([latitude, longitude]).addTo(mapInstance)
+          .bindPopup('You are here')
+          .openPopup();
+
+        const response = await axios.get(`/api/location/nearby?lat=${latitude}&lng=${longitude}`);
+        setVendors(response.data);
+        response.data.forEach(vendor => {
+          const vendorMarker = L.marker([vendor.location.lat, vendor.location.lng]).addTo(mapInstance)
+            .bindPopup(`<b>${vendor.name}</b>`)
+            .on('click', () => handleVendorClick(vendor));
+        });
+
+        socket.emit('updateVendorLocation', { lat: latitude, lng: longitude });
+
+        socket.on('vendorLocationUpdated', (data) => {
+          console.log('Vendor location updated:', data);
+          // Update vendor markers or other UI as needed
+        });
+
+        setInterval(async () => {
+          const currentPosition = await getCurrentPosition();
+          const { latitude, longitude } = currentPosition.coords;
+          userMarker.setLatLng([latitude, longitude]);
+          mapInstance.setView([latitude, longitude], 14);
+          socket.emit('updateVendorLocation', { lat: latitude, lng: longitude });
+        }, 5000);
+
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
     };
 
-    return () => {
-      document.head.removeChild(script);
-    };
+    fetchData();
+
   }, []);
 
-  return <div id="map" style={{ height: '400px', width: '100%' }}></div>;
+  const getCurrentPosition = () => {
+    return new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject);
+    });
+  };
+
+  const handleVendorClick = (vendor) => {
+    setSelectedVendor(vendor);
+  };
+
+  const handleAddToCart = (product) => {
+    setCartItems(prevItems => [...prevItems, { ...product, quantity: 1 }]);
+  };
+
+  const handleCheckout = () => {
+    console.log('Checkout', cartItems);
+  };
+
+  return (
+    <div style={{ position: 'relative', zIndex: 0 }}>
+      <div id="map" style={{ height: '400px', width: '100%', zIndex: 0 }}></div>
+      {selectedVendor && <VendorDetails vendor={selectedVendor} onAddToCart={handleAddToCart} />}
+      {/* <Cart cartItems={cartItems} onCheckout={handleCheckout} /> */}
+    </div>
+  );
 };
 
-export default MapComponent;
+export default Map;
