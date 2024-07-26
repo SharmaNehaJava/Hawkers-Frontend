@@ -6,7 +6,6 @@ import MapComponent from './Components/Map';
 import Sign_in from './Components/Sign_in';
 import Sign_up from './Components/Sign_up';
 import UserProfile from './Components/Profile/UserProfile';
-import Footer from './Components/Footer/Footer';
 import Footer2 from './Components/Footer/Footer2';
 import WhoWeAre from './Components/Footer/WhoWeAre';
 import 'flowbite/dist/flowbite.css';
@@ -33,7 +32,6 @@ function App() {
       <Blog/>
       <FAQ/>
       <GetInTouch/> */}
-      <Footer />
       <Footer2 />
     </>
   );

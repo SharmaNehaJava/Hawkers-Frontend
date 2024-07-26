@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../api/apiInstances';
 
-const Sign_up = () => {
+const SignUp = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -18,8 +18,9 @@ const Sign_up = () => {
       alert("Passwords do not match!");
       return;
     }
+    const mobileNumber = Number(mobile);
     try {
-      const { data } = await axiosInstance.post('/api/auth/register', {
+      const { data } = await axiosInstance.post('/api/users/register', {
         name,
         email,
         password,
@@ -51,7 +52,7 @@ const Sign_up = () => {
         <h2 className="text-2xl font-bold text-gray-700 text-center mb-4 border-b-2">Create Your Account</h2>
         <form onSubmit={handleSignUp}>
           <div className="grid grid-cols-2 gap-4">
-            <div >
+            <div>
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
                 Name
               </label>
@@ -90,7 +91,7 @@ const Sign_up = () => {
                 required
               />
             </div>
-            <div >
+            <div>
               <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="confirmPassword">
                 Confirm Password
               </label>
@@ -109,7 +110,7 @@ const Sign_up = () => {
               </label>
               <input
                 className="text-gray-700 border border-gray-300 rounded py-2 px-4 block w-full focus:outline-none focus:ring-2 focus:ring-blue-700"
-                type="text"
+                type="tel"
                 id="mobile"
                 value={mobile}
                 onChange={(e) => setMobile(e.target.value)}
@@ -169,4 +170,4 @@ const Sign_up = () => {
   );
 };
 
-export default Sign_up;
+export default SignUp;
