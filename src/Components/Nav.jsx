@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axiosInstance from '../api/apiInstances';
-import ProfileComponent from '../Components/ProfileDropdown'; // Make sure to import the new component
-import '../CSS/Nav.css'; // You can remove this if it's unnecessary
+import ProfileComponent from './ProfileDropdown'; // Make sure to import the new component
+// You can remove this if it's unnecessary
 import { motion } from 'framer-motion';
 
 const Nav = () => {

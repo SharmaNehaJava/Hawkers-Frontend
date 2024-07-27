@@ -7,8 +7,10 @@ const GoogleLoginComponent = ({ onLoginSuccess }) => {
 
   const handleSuccess = (response) => {
     console.log('Login Success:', response);
-    // Handle successful login here
-    onLoginSuccess(response);
+    // Extract user info from the response
+    const { profileObj } = response;
+    // Call the parent component's onLoginSuccess handler
+    onLoginSuccess(profileObj);
   };
 
   const handleError = (error) => {
@@ -21,6 +23,7 @@ const GoogleLoginComponent = ({ onLoginSuccess }) => {
       <GoogleLogin
         onSuccess={handleSuccess}
         onError={handleError}
+        
       />
     </GoogleOAuthProvider>
   );

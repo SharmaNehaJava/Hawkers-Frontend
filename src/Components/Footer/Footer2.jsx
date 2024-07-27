@@ -6,19 +6,19 @@ const Footer = () => {
   return (
   
 <footer className="bg-black border-t-2 border-red-400  ">
-<div class="text-white p-4 flex">
+<div class="text-white p-4 lg:flex">
 
     <div className='m-auto'>
-        <div class="m-auto">
-    <div className="flex items-center space-x-1">
-        <img src="https://img.icons8.com/external-outline-black-m-oki-orlando/32/40C057/external-hawker-retail-outline-outline-black-m-oki-orlando.png"  alt="external-hawker-retail-outline-outline-black-m-oki-orlando"/>
-        <img src="./public/BlackLogo.png" className="h-xl" alt="Logo" />
-    </div>
-    <p class="text-center">From Street to Screen, Hawkers Bridges the Gap</p>
+        <div class="m-auto ">
+          <div className="flex items-center space-x-1 sm:justify-center">
+            <img src="https://img.icons8.com/external-outline-black-m-oki-orlando/32/40C057/external-hawker-retail-outline-outline-black-m-oki-orlando.png"  alt="external-hawker-retail-outline-outline-black-m-oki-orlando"/>
+            <img src="./public/BlackLogo.png" className="h-xl" alt="Logo" />
+          </div>
+          <p className="text-center">From Street to Screen, Hawkers Bridges the Gap</p>
         </div>
 
         <div class="mt-2">
-    <a href="link_to_app" class="text-green-600 underline">Get the App</a>
+          <a href="link_to_app" class="text-green-600 underline">Get the App</a>
         </div>
     </div>
   
@@ -35,6 +35,7 @@ const Footer = () => {
   <div className="mt-2 p-4">
     <h2 class="text-lg font-semibold ">INFORMATION</h2>
     <ul>
+    <li><a href="contact_link" class="hover:text-green-600 font-light text-sm">About us</a></li>
       <li><a href="contact_link" class="hover:text-green-600 font-light text-sm">Contact</a></li>
       <li><a href="faqs_link" class="hover:text-green-600 font-light text-sm">FAQs</a></li>
       <li><a href="terms_conditions_link" class="hover:text-green-600 font-light text-sm">Terms & Conditions</a></li>

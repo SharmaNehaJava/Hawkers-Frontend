@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../api/apiInstances';
 
 const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
   const [userInfo, setUserInfo] = useState({});
   const [activeSection, setActiveSection] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editField, setEditField] = useState(null);
   const [isAddingAddress, setIsAddingAddress] = useState(false);
+  const [addresses, setAddresses] = useState([]);
   const [newAddress, setNewAddress] = useState({
     name: '',
     mobileNumber: '',
@@ -19,24 +23,58 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const storedUserInfo = localStorage.getItem('userInfo');
-    if (storedUserInfo) {
-      setUserInfo(JSON.parse(storedUserInfo));
-    }
+    const fetchUserInfo = async () => {
+      try {
+        const response = await axiosInstance.get('/api/users/profile');
+        setUserInfo(response.data);
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+      }
+    };
+
+    fetchUserInfo();
   }, []);
+
+  const fetchAddresses = async () => {
+    try {
+      const response = await axiosInstance.get('/api/users/profile/getAddresses');
+      setAddresses(response.data);
+    } catch (error) {
+      console.error('Error fetching addresses:', error);
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNewAddress({ ...newAddress, [name]: value });
+    setUserInfo({ ...userInfo, [name]: value });
   };
 
   const toggleAddAddress = () => {
     setIsAddingAddress(!isAddingAddress);
   };
 
-  const saveAddress = () => {
-    // Save the new address logic here
-    setIsAddingAddress(false);
+  const handleEditField = (field) => {
+    setEditField(field);
+  };
+
+  const saveAddress = async () => {
+    try {
+      const response = await axiosInstance.post('/api/users/profile/addAddresses', newAddress);
+      setAddresses([...addresses, response.data]);
+      setIsAddingAddress(false);
+      setNewAddress({
+        name: '',
+        mobileNumber: '',
+        pincode: '',
+        state: '',
+        address: '',
+        locality: '',
+        city: '',
+        defaultAddress: false,
+      });
+    } catch (error) {
+      console.error('Error saving address:', error);
+    }
   };
 
   const cancelAddAddress = () => {
@@ -54,14 +92,33 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
   };
 
   const handleSignOut = () => {
-    // Clear user info from local storage
     localStorage.removeItem('userInfo');
     setUserInfo({});
-    // Navigate to sign-in page
     navigate('/');
-    
     onSignOut();
-    
+  };
+
+  const handleDeleteAccount = async () => {
+    try {
+      await axiosInstance.delete('/api/users/deleteAccount');
+      localStorage.removeItem('userInfo');
+      setUserInfo({});
+      navigate('/');
+      onDeleteAccount();
+    } catch (error) {
+      console.error('Error deleting account:', error);
+    }
+  };
+
+  const saveUserInfo = async () => {
+    try {
+      const response = await axiosInstance.put('/api/users/profile/update', userInfo);
+      setUserInfo(response.data);
+      setIsEditing(false);
+      localStorage.setItem('userInfo', JSON.stringify(response.data));
+    } catch (error) {
+      console.error('Error updating user info:', error);
+    }
   };
 
   const renderSection = () => {
@@ -71,11 +128,70 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
           <div>
             <button onClick={() => setActiveSection(null)}>&larr; Back</button>
             <div className="mb-4  p-2">
+            {isEditing ? (
+                <>
+                <input
+                  type="text"
+                  name="name"
+                  value={userInfo.name}
+                  placeholder='Name'
+                  onChange={handleInputChange}
+                  className="border p-1 rounded w-full mb-2"
+                />
+                <input
+                  type="text"
+                  name="email"
+                  placeholder='E-mail'
+                  value={userInfo.email}
+                  onChange={handleInputChange}
+                  className="border p-1 rounded w-full mb-2"
+                />
+                <input
+                  type="text"
+                  name="mobileNumber"
+                  value={userInfo.mobile}
+                  placeholder='Mobile Number'
+                  onChange={handleInputChange}
+                  className="border p-1 rounded w-full mb-2"
+                />
+                <input
+                  type="text"
+                  name="dob"
+                  value={userInfo.dob}
+                  placeholder='Date Of Birth'
+                  onChange={handleInputChange}
+                  className="border p-1 rounded w-full mb-2"
+                />
+                <input
+                  type="text"
+                  name="gender"
+                  value={userInfo.gender}
+                  placeholder='Gender-(Male, female, Other)'
+                  onChange={handleInputChange}
+                  className="border p-1 rounded w-full mb-2"
+                />
+                <button
+                  className="bg-blue-500 text-white p-2 rounded"
+                  onClick={saveUserInfo}
+                >
+                  Update
+                </button>
+              </>
+            ) : (
+              <>
               <div className='bg-gray-200 p-2 rounded-md m-1'>Name: {userInfo.name}</div>
               <div className='bg-gray-200 p-2 rounded-md m-1'>Mobile: {userInfo.mobileNumber}</div>
               <div className='bg-gray-200 p-2 rounded-md m-1'>Email: {userInfo.email}</div>
               <div className='bg-gray-200 p-2 rounded-md m-1'>DOB: {userInfo.dob}</div>
               <div className='bg-gray-200 p-2 rounded-md m-1'>Gender: {userInfo.gender}</div>
+              <button
+                    className="bg-gray-200 text-gray-800 p-2 rounded mt-2"
+                    onClick={() => setIsEditing(true)}
+                  >
+                    Edit
+                  </button>
+                </>
+              )}
             </div>
           </div>
         );
@@ -92,7 +208,18 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
           <div>
             <button onClick={() => setActiveSection(null)}>&larr; Back</button>
             <div className="font-bold">Addresses</div>
-            {/* Display saved addresses here */}
+            {addresses.map((address, index) => (
+              <div key={index} className="bg-gray-200 p-2 rounded-md m-1">
+                <div>Name: {address.name}</div>
+                <div>Mobile: {address.mobileNumber}</div>
+                <div>Pincode: {address.pincode}</div>
+                <div>State: {address.state}</div>
+                <div>Address: {address.address}</div>
+                <div>Locality: {address.locality}</div>
+                <div>City: {address.city}</div>
+                <div>Default: {address.defaultAddress ? 'Yes' : 'No'}</div>
+              </div>
+            ))}
             <button
               className="bg-gray-100 p-2 rounded text-gray-800 w-full mt-2"
               onClick={toggleAddAddress}
@@ -170,7 +297,7 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
                     }
                     className="mr-2"
                   />
-                  <label>Make this my default address</label>
+                  <label>Make Default</label>
                 </div>
                 <div className="flex justify-between">
                   <button
@@ -246,13 +373,13 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
 
           <div className="flex justify-between mt-4">
             <button
-              className="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded"
+              className="bg-red-500 hover:bg-red-600 text-white py-auto px-2 rounded"
               onClick={onDeleteAccount}
             >
               Delete Account
             </button>
             <button
-              className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded"
+              className="bg-blue-500 hover:bg-blue-600 text-white py-auto px-2 rounded"
               onClick={handleSignOut} // Updated to call handleSignOut
             >
               Sign Out

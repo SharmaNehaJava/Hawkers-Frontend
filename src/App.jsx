@@ -13,6 +13,8 @@ import Blog from "./Components/Footer/Blog"
 import Contact from "./Components/Footer/Contact"
 import FAQ from "./Components/Footer/FAQ"
 
+import Categories from "./Components/ExploreMenu/Categories"
+
 function App() {
   return (
     <>
@@ -32,6 +34,7 @@ function App() {
       <Blog/>
       <FAQ/>
       <GetInTouch/> */}
+      <Categories/>
       <Footer2 />
     </>
   );

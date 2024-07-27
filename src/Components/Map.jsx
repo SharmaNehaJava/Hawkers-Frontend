@@ -3,8 +3,8 @@ import L from 'leaflet';
 import axios from 'axios';
 import 'leaflet/dist/leaflet.css';
 import io from 'socket.io-client';
-import VendorDetails from './VendorDetails';
-import Cart from './Cart';
+// import VendorDetails from './VendorDetails';
+import Cart from '../Components/Cart&Payment/Cart';
 
 const socket = io('http://localhost:3000');
 
