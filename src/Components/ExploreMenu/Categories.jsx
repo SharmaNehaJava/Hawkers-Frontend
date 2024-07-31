@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Categories = () => {
+const Categories = ({ category, setCategory }) => {
     const categories = [
         { name: 'Fruits', img: "/categories/Fruits.jpg" },
         { name: 'Vegetables', img: '/categories/Veges.jpg' },
@@ -16,10 +16,18 @@ const Categories = () => {
                 Choose from a diverse array of items featuring local specialties. Our mission is to satisfy all your needs while celebrating the heart of the city: Hawkers.
             </p>
             <div className="flex flex-wrap justify-center gap-8">
-                {categories.map((category, index) => (
-                    <div key={index} className="flex flex-col items-center">
-                        <img className="h-24 w-24 rounded-full object-cover" src={category.img} alt={category.name} />
-                        <h3 className="mt-2 text-lg font-semibold">{category.name}</h3>
+                {categories.map((cat, index) => (
+                    <div
+                        key={index}
+                        className="flex flex-col items-center cursor-pointer"
+                        onClick={() => setCategory(prev => prev === cat.name ? "All" : cat.name)}
+                    >
+                        <img
+                            className={`h-24 w-24 rounded-full object-cover ${category === cat.name ? "border-4 border-tomato-600" : ""}`}
+                            src={cat.img}
+                            alt={cat.name}
+                        />
+                        <h3 className="mt-2 text-lg font-semibold">{cat.name}</h3>
                     </div>
                 ))}
             </div>

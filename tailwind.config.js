@@ -6,7 +6,13 @@ export default {
       'node_modules/flowbite-react/lib/esm/**/*.js'
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        tomato: {
+          600: '#e53e3e', // Tomato red color
+        },
+      },
+    },
   },
   plugins: [
     require('flowbite/plugin')

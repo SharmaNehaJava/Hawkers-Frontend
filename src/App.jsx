@@ -1,5 +1,5 @@
 // src/App.jsx
-import React from 'react';
+import React,{useState} from 'react';
 import { Route, Routes } from 'react-router-dom';
 import Nav from './Components/Nav';
 import MapComponent from './Components/Map';
@@ -14,8 +14,10 @@ import Contact from "./Components/Footer/Contact"
 import FAQ from "./Components/Footer/FAQ"
 
 import Categories from "./Components/ExploreMenu/Categories"
+import FoodDisplay from "./Components/ExploreMenu/FoodDisplay"
 
 function App() {
+  const [category, setCategory] = useState("All");
   return (
     <>
       <Nav />
@@ -34,7 +36,8 @@ function App() {
       <Blog/>
       <FAQ/>
       <GetInTouch/> */}
-      <Categories/>
+      <Categories category={category} setCategory= {setCategory}/>
+      <FoodDisplay  />
       <Footer2 />
     </>
   );

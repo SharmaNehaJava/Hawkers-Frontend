@@ -82,8 +82,9 @@ const Map = () => {
   };
 
   return (
-    <div style={{ position: 'relative', zIndex: 0 }}>
-      <div id="map" style={{ height: '400px', width: '100%', zIndex: 0 }}></div>
+    <div style={{ position: 'relative', zIndex: 0 }} >
+      <div id="map" style={{ height: '400px', width: '100%',}}
+      className='z-0'></div>
       {selectedVendor && <VendorDetails vendor={selectedVendor} onAddToCart={handleAddToCart} />}
       {/* <Cart cartItems={cartItems} onCheckout={handleCheckout} /> */}
     </div>

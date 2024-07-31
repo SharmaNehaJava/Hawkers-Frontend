@@ -331,41 +331,31 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
   };
 
   return (
-    <div className="absolute right-0 mt-2 w-72 bg-white border border-gray-300 rounded-lg p-4 shadow-lg z-50">
+    <div className="absolute right-0 mt-2 w-72 bg-black border border-gray-800 rounded-lg p-4 shadow-lg z-50">
       {activeSection ? (
         renderSection()
       ) : (
         <>
-          <div className="flex items-center mb-4">
-            <div className="h-10 w-10 bg-blue-500 text-white rounded-full flex items-center justify-center">
-              {userInfo.name && userInfo.name.charAt(0).toUpperCase()}
-            </div>
-            <div className="ml-3">
-              <div className="font-bold">{userInfo.name}</div>
-              <div className="text-sm text-gray-600">{userInfo.email}</div>
-            </div>
-          </div>
-
           <button
-            className="w-full text-left py-2 px-4 rounded hover:bg-gray-100"
+            className="w-full text-left m-1 py-2 px-4 rounded border-2 border-gray-800 hover:bg-gray-800 hover:text-green-500"
             onClick={() => setActiveSection('userInfo')}
           >
             User Info
           </button>
           <button
-            className="w-full text-left py-2 px-4 rounded hover:bg-gray-100"
+            className="w-full text-left py-2 px-4 rounded m-1 rounded border-2 border-gray-800 hover:bg-gray-800 hover:text-green-500"
             onClick={() => setActiveSection('order')}
           >
             Order
           </button>
           <button
-            className="w-full text-left py-2 px-4 rounded hover:bg-gray-100"
+            className="w-full text-left py-2 px-4 m-1 rounded rounded border-2 border-gray-800  hover:bg-gray-800 hover:text-green-500"
             onClick={() => setActiveSection('addresses')}
           >
             Addresses
           </button>
           <button
-            className="w-full text-left py-2 px-4 rounded hover:bg-gray-100"
+            className="w-full text-left py-2 px-4 rounded  rounded border-2 border-gray-800 m-1 hover:bg-gray-800 hover:text-green-500"
             onClick={() => setActiveSection('helpCenter')}
           >
             Help Center
@@ -373,14 +363,14 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
 
           <div className="flex justify-between mt-4">
             <button
-              className="bg-red-500 hover:bg-red-600 text-white py-auto px-2 rounded"
+              className="bg-red-500 hover:bg-red-600 text-white p-2 rounded "
               onClick={onDeleteAccount}
             >
               Delete Account
             </button>
             <button
               className="bg-blue-500 hover:bg-blue-600 text-white py-auto px-2 rounded"
-              onClick={handleSignOut} // Updated to call handleSignOut
+              onClick={handleSignOut}
             >
               Sign Out
             </button>
