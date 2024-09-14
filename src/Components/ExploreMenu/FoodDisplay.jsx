@@ -1,6 +1,7 @@
 // src/Components/ExploreMenu/FoodDisplay.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 const FoodDisplay = ({ category }) => {
   const [products, setProducts] = useState([]);
@@ -44,7 +45,8 @@ const FoodDisplay = ({ category }) => {
       <div>
         {products.map((product) => (
           <div key={product._id}>
-            <img src={product.image} alt={product.name} />
+            <LazyLoadImage src={product.image} alt={product.name}
+              effect="blur" />
             <h2>{product.name}</h2>
             <p>{product.description}</p>
             <p>Price: ${product.price}</p>

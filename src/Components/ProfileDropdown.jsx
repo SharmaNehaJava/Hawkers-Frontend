@@ -32,21 +32,32 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
       }
     };
 
-    fetchUserInfo();
-  }, []);
+    const fetchAddresses = async () => {
+      try {
+        const response = await axiosInstance.get('/api/users/profile/getAddresses');
+        setAddresses(response.data);
+      } catch (error) {
+        console.error('Error fetching addresses:', error);
+      }
+    };
 
-  const fetchAddresses = async () => {
-    try {
-      const response = await axiosInstance.get('/api/users/profile/getAddresses');
-      setAddresses(response.data);
-    } catch (error) {
-      console.error('Error fetching addresses:', error);
-    }
-  };
+    fetchUserInfo();
+    fetchAddresses();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setUserInfo({ ...userInfo, [name]: value });
+  };
+
+  const handleAddressChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    if (type === 'checkbox') {
+      setNewAddress({ ...newAddress, [name]: checked });
+    } else {
+      setNewAddress({ ...newAddress, [name]: value });
+
+    }
   };
 
   const toggleAddAddress = () => {
@@ -93,18 +104,16 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
 
   const handleSignOut = () => {
     localStorage.removeItem('userInfo');
-    setUserInfo({});
-    navigate('/');
     onSignOut();
+    window.location.reload();
   };
 
   const handleDeleteAccount = async () => {
     try {
       await axiosInstance.delete('/api/users/deleteAccount');
       localStorage.removeItem('userInfo');
-      setUserInfo({});
-      navigate('/');
       onDeleteAccount();
+      window.location.reload();
     } catch (error) {
       console.error('Error deleting account:', error);
     }
@@ -115,10 +124,23 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
       const response = await axiosInstance.put('/api/users/profile/update', userInfo);
       setUserInfo(response.data);
       setIsEditing(false);
-      localStorage.setItem('userInfo', JSON.stringify(response.data));
     } catch (error) {
       console.error('Error updating user info:', error);
     }
+  };
+
+  const cancelEdit = () => {
+    setIsEditing(false);
+
+    const fetchUserInfo = async () => {
+      try {
+        const response = await axiosInstance.get('/api/users/profile');
+        setUserInfo(response.data);
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+      }
+    };
+    fetchUserInfo();
   };
 
   const renderSection = () => {
@@ -127,7 +149,7 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
         return (
           <div>
             <button onClick={() => setActiveSection(null)}>&larr; Back</button>
-            <div className="mb-4  p-2">
+            <div className="mb-1 p-2">
             {isEditing ? (
                 <>
                 <input
@@ -136,7 +158,7 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
                   value={userInfo.name}
                   placeholder='Name'
                   onChange={handleInputChange}
-                  className="border p-1 rounded w-full mb-2"
+                  className="bg-gray-800 p-2 rounded-md m-1 w-full hover:bg-gray-500"
                 />
                 <input
                   type="text"
@@ -144,7 +166,7 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
                   placeholder='E-mail'
                   value={userInfo.email}
                   onChange={handleInputChange}
-                  className="border p-1 rounded w-full mb-2"
+                  className="bg-gray-800 p-2 rounded-md m-1 w-full hover:bg-gray-500"
                 />
                 <input
                   type="text"
@@ -152,7 +174,7 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
                   value={userInfo.mobile}
                   placeholder='Mobile Number'
                   onChange={handleInputChange}
-                  className="border p-1 rounded w-full mb-2"
+                  className="bg-gray-800 p-2 rounded-md m-1 w-full hover:bg-gray-500"
                 />
                 <input
                   type="text"
@@ -160,7 +182,7 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
                   value={userInfo.dob}
                   placeholder='Date Of Birth'
                   onChange={handleInputChange}
-                  className="border p-1 rounded w-full mb-2"
+                  className="bg-gray-800 p-2 rounded-md m-1 w-full hover:bg-gray-500"
                 />
                 <input
                   type="text"
@@ -168,24 +190,32 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
                   value={userInfo.gender}
                   placeholder='Gender-(Male, female, Other)'
                   onChange={handleInputChange}
-                  className="border p-1 rounded w-full mb-2"
+                  className="bg-gray-800 p-2 rounded-md m-1 w-full hover:bg-gray-500"
                 />
+                <div className='flex justify-between m-1'>
                 <button
-                  className="bg-blue-500 text-white p-2 rounded"
+                  className="bg-blue-800 text-white p-2 rounded hover:bg-blue-500"
                   onClick={saveUserInfo}
                 >
                   Update
                 </button>
+                <button
+                  className="bg-blue-800 text-white p-2 rounded hover:bg-blue-500"
+                  onClick={cancelEdit}
+                >
+                  Cancel
+                </button>
+                </div>
               </>
             ) : (
               <>
-              <div className='bg-gray-200 p-2 rounded-md m-1'>Name: {userInfo.name}</div>
-              <div className='bg-gray-200 p-2 rounded-md m-1'>Mobile: {userInfo.mobileNumber}</div>
-              <div className='bg-gray-200 p-2 rounded-md m-1'>Email: {userInfo.email}</div>
-              <div className='bg-gray-200 p-2 rounded-md m-1'>DOB: {userInfo.dob}</div>
-              <div className='bg-gray-200 p-2 rounded-md m-1'>Gender: {userInfo.gender}</div>
+              <div className='bg-gray-800 p-2 rounded-md m-1'>Name: {userInfo.name}</div>
+              <div className='bg-gray-800 p-2 rounded-md m-1'>Email: {userInfo.email}</div>
+              <div className='bg-gray-800 p-2 rounded-md m-1'>Mobile: {userInfo.mobileNumber}</div>
+              <div className='bg-gray-800 p-2 rounded-md m-1'>DOB: {userInfo.dob}</div>
+              <div className='bg-gray-800 p-2 rounded-md m-1'>Gender: {userInfo.gender}</div>
               <button
-                    className="bg-gray-200 text-gray-800 p-2 rounded mt-2"
+                    className="bg-blue-500 text-white p-2 rounded "
                     onClick={() => setIsEditing(true)}
                   >
                     Edit
@@ -233,7 +263,7 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
                   name="name"
                   placeholder="Name"
                   value={newAddress.name}
-                  onChange={handleInputChange}
+                  onChange={handleAddressChange}
                   className="border p-1 rounded w-full mb-2"
                 />
                 <input
@@ -241,7 +271,7 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
                   name="mobileNumber"
                   placeholder="Mobile Number"
                   value={newAddress.mobileNumber}
-                  onChange={handleInputChange}
+                  onChange={handleAddressChange}
                   className="border p-1 rounded w-full mb-2"
                 />
                 <input
@@ -249,7 +279,7 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
                   name="pincode"
                   placeholder="Pincode"
                   value={newAddress.pincode}
-                  onChange={handleInputChange}
+                  onChange={handleAddressChange}
                   className="border p-1 rounded w-full mb-2"
                 />
                 <input
@@ -257,7 +287,7 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
                   name="state"
                   placeholder="State"
                   value={newAddress.state}
-                  onChange={handleInputChange}
+                  onChange={handleAddressChange}
                   className="border p-1 rounded w-full mb-2"
                 />
                 <input
@@ -265,7 +295,7 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
                   name="address"
                   placeholder="Address (house no, building no, area)"
                   value={newAddress.address}
-                  onChange={handleInputChange}
+                  onChange={handleAddressChange}
                   className="border p-1 rounded w-full mb-2"
                 />
                 <input
@@ -273,7 +303,7 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
                   name="locality"
                   placeholder="Locality"
                   value={newAddress.locality}
-                  onChange={handleInputChange}
+                  onChange={handleAddressChange}
                   className="border p-1 rounded w-full mb-2"
                 />
                 <input
@@ -281,7 +311,7 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
                   name="city"
                   placeholder="City/District"
                   value={newAddress.city}
-                  onChange={handleInputChange}
+                  onChange={handleAddressChange}
                   className="border p-1 rounded w-full mb-2"
                 />
                 <div className="flex items-center mb-2">
@@ -364,7 +394,7 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
           <div className="flex justify-between mt-4">
             <button
               className="bg-red-500 hover:bg-red-600 text-white p-2 rounded "
-              onClick={onDeleteAccount}
+              onClick={handleDeleteAccount}
             >
               Delete Account
             </button>
