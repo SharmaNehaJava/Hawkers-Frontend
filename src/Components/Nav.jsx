@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { AiOutlineClose, AiOutlineMenu } from 'react-icons/ai';
 import { useNavigate, Link } from 'react-router-dom';
 import ProfileDropdown from './ProfileDropdown';
+import Cart from './Cart&Payment/Cart.jsx'; // Import Cart component
 
 const Nav = () => {
     const [hidden, setHidden] = useState(true);
@@ -12,11 +13,11 @@ const Nav = () => {
     const [isMobile, setIsMobile] = useState(false);
     const [isProfileDropdown, setIsProfileDropdown] = useState(false);
     const [activeSection, setActiveSection] = useState('');
+    const [isCartOpen, setIsCartOpen] = useState(false); // State to manage cart visibility
 
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Initial state setup based on localStorage
         const storedUserInfo = localStorage.getItem('userInfo');
         if (storedUserInfo) {
             const parsedUser = JSON.parse(storedUserInfo);
@@ -25,7 +26,6 @@ const Nav = () => {
             setProfileImage(parsedUser.profileImage);
         }
 
-        // Listen for custom events for login, logout, or account deletion
         const handleAuthChange = () => {
             const updatedUserInfo = localStorage.getItem('userInfo');
             if (updatedUserInfo) {
@@ -73,13 +73,18 @@ const Nav = () => {
 
     const signOut = () => {
         localStorage.removeItem('userInfo');
-        window.dispatchEvent(new Event("userLogout"));  // Trigger custom logout event
+        window.dispatchEvent(new Event("userLogout"));
         navigate('/');
     };
 
     const toggleProfileDropdown = () => {
         setActiveSection(activeSection === 'profile' ? '' : 'profile');
         setIsProfileDropdown(prevState => !prevState);
+    };
+
+    // Toggle Cart
+    const toggleCart = () => {
+        setIsCartOpen(!isCartOpen);
     };
 
     const navItems = [
@@ -124,7 +129,7 @@ const Nav = () => {
                         </button>
                     )}
                     {!hidden && activeSection === 'search' && (
-                        <div className="absolute top-14 right-14 flex text-white items-center bg-gray-800 text  shadow-inner rounded-md p-1">
+                        <div className="absolute top-14 right-14 flex text-white items-center bg-gray-800 text  shadow-inner rounded-md p-1 z-50">
                             <input
                                 className="input rounded-md px-4 py-2 border-2 border-transparent focus:outline-none focus:border-blue-500 placeholder-gray-400 transition-all duration-300 bg-gray-500"
                                 placeholder="Search..."
@@ -166,8 +171,8 @@ const Nav = () => {
                     {/* Cart Icon */}
                     {isLoggedIn && (
                         <button
-                            className={`p-2 rounded-full transition-colors duration-300 ${activeSection === 'cart' ? 'bg-orange-500' : 'bg-white hover:bg-green-500'}`}
-                            onClick={() => setActiveSection(activeSection === 'cart' ? '' : 'cart')}
+                            className={`p-2 rounded-full transition-colors duration-300 ${isCartOpen ? 'bg-orange-500' : 'bg-white hover:bg-green-500'}`}
+                            onClick={toggleCart}
                         >
                             <img className="h-8" src="https://img.icons8.com/ios/50/shopping-cart--v1.png" alt="Cart" />
                         </button>
@@ -198,6 +203,9 @@ const Nav = () => {
                     </ul>
                 </div>
             )}
+
+            {/* Cart Component */}
+            {isCartOpen && <Cart onClose={toggleCart} />}
         </div>
     );
 };

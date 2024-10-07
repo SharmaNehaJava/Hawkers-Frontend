@@ -361,50 +361,51 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
   };
 
   return (
-    <div className="absolute right-0 mt-2 w-72 bg-black border border-gray-800 rounded-lg p-4 shadow-lg z-50">
+    <div className="absolute right-0 mt-2 w-72 bg-gray-900 border border-gray-800 rounded-lg p-4 shadow-lg z-50">
       {activeSection ? (
         renderSection()
       ) : (
         <>
           <button
-            className="w-full text-left m-1 py-2 px-4 rounded border-2 border-gray-800 hover:bg-gray-800 hover:text-green-500"
+            className="w-full text-left m-1 py-2 px-4
+            bg-gray-500 rounded border-2 border-gray-500 hover:border-blue-500 "
             onClick={() => setActiveSection('userInfo')}
           >
             User Info
           </button>
           <button
-            className="w-full text-left py-2 px-4 rounded m-1 rounded border-2 border-gray-800 hover:bg-gray-800 hover:text-green-500"
+            className="w-full text-left py-2 px-4 rounded m-1 bg-gray-500 border-2 border-gray-500 hover:border-blue-500"
             onClick={() => setActiveSection('order')}
           >
             Order
           </button>
           <button
-            className="w-full text-left py-2 px-4 m-1 rounded rounded border-2 border-gray-800  hover:bg-gray-800 hover:text-green-500"
+            className="w-full text-left py-2 px-4 rounded m-1 bg-gray-500 border-2 border-gray-500 hover:border-blue-500"
             onClick={() => setActiveSection('addresses')}
           >
             Addresses
           </button>
           <button
-            className="w-full text-left py-2 px-4 rounded  rounded border-2 border-gray-800 m-1 hover:bg-gray-800 hover:text-green-500"
+            className="w-full text-left py-2 px-4 rounded m-1 bg-gray-500 border-2 border-gray-500 hover:border-blue-500"
             onClick={() => setActiveSection('helpCenter')}
           >
             Help Center
           </button>
 
-          <div className="flex justify-between mt-4">
-            <button
+          {/* <div className="flex justify-between mt-4"> */}
+            {/* <button
               className="bg-red-500 hover:bg-red-600 text-white p-2 rounded "
               onClick={handleDeleteAccount}
             >
               Delete Account
-            </button>
+            </button> */}
             <button
-              className="bg-blue-500 hover:bg-blue-600 text-white py-auto px-2 rounded"
+              className="bg-red-500 hover:bg-red-600 text-white  p-2 rounded-md"
               onClick={handleSignOut}
             >
               Sign Out
             </button>
-          </div>
+          {/* </div> */}
         </>
       )}
     </div>

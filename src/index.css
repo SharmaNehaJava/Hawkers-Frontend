@@ -21,6 +21,17 @@ button {
   cursor: pointer;
 }
 
+/* Add this to your global CSS or as a custom Tailwind plugin */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari, and Opera */
+}
+
+
 /* Add this CSS to your main CSS file */
 
 

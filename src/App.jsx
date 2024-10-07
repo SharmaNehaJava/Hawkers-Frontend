@@ -3,6 +3,8 @@ import { Route, Routes } from 'react-router-dom';
 import Nav from './Components/Nav';
 import Footer2 from './Components/Footer/Footer2';
 import Home from './Components/Home';
+import Categories from "./Components/ExploreMenu/Categories.jsx";
+
 
 const Sign_in = lazy(() => import('./Components/Sign_in'));
 const Sign_up = lazy(() => import('./Components/Sign_up'));
@@ -22,7 +24,7 @@ function App() {
         <Suspense
           fallback={
             <div className="w-screen h-screen flex flex-col items-center justify-center bg-green-500 text-white text-center">
-              <img src="/logo.png" alt="Hawkers Logo" className="w-20 h-20 mb-4" />
+              <img src="/logo.png" alt="Hawkers Logo" className="w-20 h-20 mb-4 object-cover" />
               <h1 className="text-4xl font-bold">HAWKERS</h1>
             </div>
           }
@@ -31,6 +33,7 @@ function App() {
             <Route path="/" element={<Home category={category} setCategory={setCategory} />} />
             <Route path="/signin" element={<Sign_in />} />
             <Route path="/signup" element={<Sign_up />} />
+            <Route path="/categories" element={<Categories />} />
             <Route path="/profile" element={<LazyUserProfile />} />
             <Route path="/who-we-are" element={<LazyWhoWeAre />} />
             <Route path="/blog" element={<LazyBlog />} />
