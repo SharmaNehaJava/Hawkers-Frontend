@@ -1,5 +1,4 @@
 import React, { createContext, useReducer } from 'react';
-import axios from 'axios';
 
 const CartContext = createContext();
 
@@ -33,8 +32,8 @@ const cartReducer = (state, action) => {
 export const CartProvider = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, { cart: [] });
 
-  const addToCart = (productId, quantity, price) => {
-    dispatch({ type: 'ADD_ITEM', payload: { productId, quantity, price } });
+  const addToCart = (productId, quantity, price, image) => {
+    dispatch({ type: 'ADD_ITEM', payload: { productId, quantity, price, image } });
   };
 
   const removeFromCart = (productId) => {

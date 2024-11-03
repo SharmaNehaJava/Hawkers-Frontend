@@ -3,7 +3,7 @@ import React from "react";
 const Blog = () => {
   return (
     <>
-      <section className="bg-white pb-10 pt-10 dark:bg-dark lg:pb-20 lg:pt-[120px] px-4 h-auto">
+      <section className="bg-white pb-10 pt-10 mt-2 dark:bg-dark lg:pb-20 lg:pt-[120px] px-4 h-auto">
         <div className="container">
           <div className="-mx-2 flex flex-wrap">
             <div className="w-full px-2">

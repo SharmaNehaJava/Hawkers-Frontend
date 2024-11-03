@@ -1,8 +1,6 @@
 // src/Components/Home.jsx
-import React, { lazy, Suspense, useEffect, useState } from 'react';
-import Categories from "./ExploreMenu/Categories";
-import FoodDisplay from './ExploreMenu/FoodDisplay.jsx';
-import { food_list } from '../assets/assets.js';
+import React, { useEffect, useState } from 'react';
+import Product from "./Product.jsx"
 // import Map from "./Map.jsx";
 
 // Import all the images for the carousel
@@ -49,25 +47,12 @@ const Carousel = () => {
 };
 
 const Home = ({ category, setCategory }) => {
-  const [filteredItems, setFilteredItems] = useState([]); 
-
-  useEffect(() => {
-
-    if (category === 'All') {
-      setFilteredItems(food_list); 
-    } else {
-      const filtered = food_list.filter(item => item.category === category);
-      setFilteredItems(filtered);
-    }
-  }, [category]);
 
   return (
     <>
       <div className="home-container">
           <Carousel />
-          {/* <Map/> */}
-          <Categories category={category} setCategory={setCategory} />
-          <FoodDisplay items={filteredItems} /> 
+          <Product category={category} setCategory={setCategory}/>
       </div>
     </>
   );

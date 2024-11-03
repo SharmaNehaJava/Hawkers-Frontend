@@ -361,7 +361,7 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
   };
 
   return (
-    <div className="absolute right-0 mt-2 w-72 bg-gray-900 border border-gray-800 rounded-lg p-4 shadow-lg z-50">
+    <div className="absolute right-0  w-72 bg-gray-900 border border-gray-800 rounded-lg p-4 shadow-lg z-50 text-white">
       {activeSection ? (
         renderSection()
       ) : (

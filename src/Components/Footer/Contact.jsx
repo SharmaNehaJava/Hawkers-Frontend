@@ -30,7 +30,7 @@ const Contact = () => {
 
   return (
     <>
-      <section className="relative z-2 overflow-hidden bg-gradient-to-r bg-gray-100 dark:from-dark dark:via-dark-3 dark:to-dark lg:py-[80px]">
+      <section className="relative mt-10 z-2 overflow-hidden bg-gradient-to-r bg-gray-100 dark:from-dark dark:via-dark-3 dark:to-dark lg:py-[80px]">
         <div className="container mx-auto p-2">
           <span className="block text-4xl font-extrabold text-green-600 text-center p-2">
             Contact Us

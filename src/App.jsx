@@ -3,8 +3,8 @@ import { Route, Routes } from 'react-router-dom';
 import Nav from './Components/Nav';
 import Footer2 from './Components/Footer/Footer2';
 import Home from './Components/Home';
-import Categories from "./Components/ExploreMenu/Categories.jsx";
-
+import Cart from "./Components/Cart&Payment/Cart";
+import PlaceOrder from './Components/Cart&Payment/PlaceOrder'; 
 
 const Sign_in = lazy(() => import('./Components/Sign_in'));
 const Sign_up = lazy(() => import('./Components/Sign_up'));
@@ -33,12 +33,14 @@ function App() {
             <Route path="/" element={<Home category={category} setCategory={setCategory} />} />
             <Route path="/signin" element={<Sign_in />} />
             <Route path="/signup" element={<Sign_up />} />
-            <Route path="/categories" element={<Categories />} />
             <Route path="/profile" element={<LazyUserProfile />} />
             <Route path="/who-we-are" element={<LazyWhoWeAre />} />
             <Route path="/blog" element={<LazyBlog />} />
             <Route path="/faq" element={<LazyFAQ />} />
             <Route path="/contact-us" element={<LazyContact />} />
+
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/place-order" element={<PlaceOrder />} /> 
           </Routes>
         </Suspense>
       </div>

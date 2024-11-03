@@ -1,16 +1,21 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import CartContext from '../../context/cartContext';
 
 const FoodItem = ({ id, name, description, price, image }) => {
   const { addToCart, removeFromCart, cart } = useContext(CartContext);
-  const [quantity, setQuantity] = useState(0);
 
-  useState(() => {
-    const itemInCart = cart.find(item => item.productId === id);
+  // Sync quantity with cart context
+  const itemInCart = cart.find(item => item.productId === id);
+  const [quantity, setQuantity] = useState(itemInCart ? itemInCart.quantity : 0);
+
+  useEffect(() => {
+    // Update quantity whenever cart changes
     if (itemInCart) {
       setQuantity(itemInCart.quantity);
+    } else {
+      setQuantity(0); // Item was removed from cart
     }
-  }, [cart, id]);
+  }, [cart, itemInCart]); // Listening to changes in cart and item
 
   const handleAdd = () => {
     const newQuantity = quantity + 1;
@@ -27,6 +32,9 @@ const FoodItem = ({ id, name, description, price, image }) => {
       removeFromCart(id);
     }
   };
+
+  // Debug log for name
+  console.log('FoodItem name:', name);
 
   return (
     <div className="food-item bg-white shadow-lg rounded-lg p-4 m-4 flex flex-col justify-between items-center max-w-xs hover:shadow-xl transition-shadow duration-300">

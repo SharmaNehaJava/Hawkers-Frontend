@@ -38,7 +38,7 @@ const FAQ = () => {
   };
 
   return (
-    <div className='bg-gray-100 m-0 p-4'>
+    <div className='bg-gray-100 mt-10 p-4'>
       <div className="max-w-2xl mx-auto px-8 py-4">
       <h2 className="text-3xl font-bold text-center text-green-500 mb-6">Frequently Asked Questions</h2>
       {faqData.map((item, index) => (

@@ -35,35 +35,35 @@ const Footer = () => {
   </div>
 
   <div className="mt-2 p-4">
-    <h2 class="text-lg font-semibold ">INFORMATION</h2>
+    <h2 className="text-lg font-semibold ">INFORMATION</h2>
     <ul>
-    <li ><Link to="/who-we-are" class="hover:text-green-600 font-light text-sm">About us</Link></li>
-      <li><Link to="/contact-us" class="hover:text-green-600 font-light text-sm">Contact</Link></li>
-      <li><Link to="/faq" class="hover:text-green-600 font-light text-sm">FAQs</Link></li>
-      <li><Link to="/terms-and-condition" class="hover:text-green-600 font-light text-sm">Terms & Conditions</Link></li>
-      <li><Link to="/privacy-policy" class="hover:text-green-600 font-light text-sm">Privacy Policy</Link></li>
-      <li><Link to="/return-policy" class="hover:text-green-600 font-light text-sm">Return Policy</Link></li>
+  <li ><Link to="/who-we-are" className="hover:text-green-600 font-light text-sm">About us</Link></li>
+      <li><Link to="/contact-us" className="hover:text-green-600 font-light text-sm">Contact</Link></li>
+      <li><Link to="/faq" className="hover:text-green-600 font-light text-sm">FAQs</Link></li>
+      <li><Link to="/terms-and-condition" className="hover:text-green-600 font-light text-sm">Terms & Conditions</Link></li>
+      <li><Link to="/privacy-policy" className="hover:text-green-600 font-light text-sm">Privacy Policy</Link></li>
+      <li><Link to="/return-policy" className="hover:text-green-600 font-light text-sm">Return Policy</Link></li>
     </ul>
   </div>
     </div>
  
  <div className="flex m-auto">
  <div className="mt-2 p-4">
-    <h2 class="text-lg font-semibold ">CATEGORIES</h2>
+    <h2 className="text-lg font-semibold ">CATEGORIES</h2>
     <ul>
-      <li><a href="deal_of_day_link" class="hover:text-green-600 font-light text-sm">Deal of the Day</a></li>
-      <li><a href="fruits_link" class="hover:text-green-600 font-light text-sm">Fruits</a></li>
-      <li><a href="veggies_link" class="hover:text-green-600 font-light text-sm">Veggies</a></li>
-      <li><a href="snacks_link" class="hover:text-green-600 font-light text-sm">Snacks</a></li>
-      <li><a href="sweets_link" class="hover:text-green-600 font-light text-sm">Sweets</a></li>
-      <li><a href="dairy_link" class="hover:text-green-600 font-light text-sm">Dairy</a></li>
-      <li><a href="services_link" class="hover:text-green-600 font-light text-sm">Services</a></li>
+      <li><a href="deal_of_day_link" className="hover:text-green-600 font-light text-sm">Deal of the Day</a></li>
+      <li><a href="fruits_link" className="hover:text-green-600 font-light text-sm">Fruits</a></li>
+      <li><a href="veggies_link" className="hover:text-green-600 font-light text-sm">Veggies</a></li>
+      <li><a href="snacks_link" className="hover:text-green-600 font-light text-sm">Snacks</a></li>
+      <li><a href="sweets_link" className="hover:text-green-600 font-light text-sm">Sweets</a></li>
+      <li><a href="dairy_link" className="hover:text-green-600 font-light text-sm">Dairy</a></li>
+      <li><a href="services_link" className="hover:text-green-600 font-light text-sm">Services</a></li>
     </ul>
   </div>
 
   <div className='mt-2 p-4'>
-    <h2 class="text-lg font-semibold ">CONTACT US</h2>
-    <p className='font-light text-sm'>Phone: <a href="tel:phone_number" class="text-green-600 ">9356928367</a></p>
+    <h2 className="text-lg font-semibold ">CONTACT US</h2>
+    <p className='font-light text-sm'>Phone: <a href="tel:phone_number" className="text-green-600 ">9356928367</a></p>
     <p className='font-light text-sm'>Email: <a href="mailto:email_address" className="text-green-600 ">email_address</a></p>
     <p className='font-light text-sm'>Timings: Open 24*7</p>
     <p className='font-light text-sm'>Address: Dwarika, New Delhi-43 </p>
