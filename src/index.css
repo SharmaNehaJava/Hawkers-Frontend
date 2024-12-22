@@ -35,4 +35,50 @@ button {
 /* Add this CSS to your main CSS file */
 
 
+.main {
+  /* box-sizing: border-box; */
+}
 
+.maingrid {
+  display: grid;
+  padding: 0px 50px;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-top: 40px;
+  margin-bottom: 100px;
+  background-color: #9dccff;
+}
+
+.maingridcard {
+  position: relative;
+  width: 100%;
+  /* height: auto; */
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.maingridcard h3 {
+  font-size: 1rem;
+  color: #555;
+}
+
+.maingridcard h1 {
+  font-size: 1.5rem;
+  color: #333;
+  margin: 10px 0;
+}
+
+.maingridcard p {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.maingridcard-img {
+  width: 100%;
+  border-radius: 8px;
+  object-fit: cover; 
+}
+
+.bloglist{
+  display: block;
+} 

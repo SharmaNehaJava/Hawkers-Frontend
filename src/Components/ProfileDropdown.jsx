@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../api/apiInstances';
+import { AuthContext } from '../context/AuthContext';
 
 const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
+  const { isLoggedIn, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   const [userInfo, setUserInfo] = useState({});
   const [activeSection, setActiveSection] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -20,30 +24,33 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
     defaultAddress: false,
   });
 
-  const navigate = useNavigate();
-
   useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const response = await axiosInstance.get('/api/users/profile');
-        setUserInfo(response.data);
-      } catch (error) {
-        console.error('Error fetching user info:', error);
-      }
-    };
+    if (!isLoggedIn) {
+      navigate('/signin');
+    } else {
+      // Fetch user info and addresses
+      const fetchUserInfo = async () => {
+        try {
+          const response = await axiosInstance.get('/api/user/info');
+          setUserInfo(response.data);
+        } catch (error) {
+          console.error('Error fetching user info:', error);
+        }
+      };
 
-    const fetchAddresses = async () => {
-      try {
-        const response = await axiosInstance.get('/api/users/profile/getAddresses');
-        setAddresses(response.data);
-      } catch (error) {
-        console.error('Error fetching addresses:', error);
-      }
-    };
+      const fetchAddresses = async () => {
+        try {
+          const response = await axiosInstance.get('/api/user/addresses');
+          setAddresses(response.data);
+        } catch (error) {
+          console.error('Error fetching addresses:', error);
+        }
+      };
 
-    fetchUserInfo();
-    fetchAddresses();
-  }, []);
+      fetchUserInfo();
+      fetchAddresses();
+    }
+  }, [isLoggedIn, navigate]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -103,17 +110,16 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
   };
 
   const handleSignOut = () => {
-    localStorage.removeItem('userInfo');
-    onSignOut();
-    window.location.reload();
+    logout();
+    navigate('/');
   };
 
   const handleDeleteAccount = async () => {
     try {
       await axiosInstance.delete('/api/users/deleteAccount');
       localStorage.removeItem('userInfo');
-      onDeleteAccount();
-      window.location.reload();
+      logout();
+      navigate('/');
     } catch (error) {
       console.error('Error deleting account:', error);
     }

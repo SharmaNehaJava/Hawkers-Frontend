@@ -1,5 +1,6 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 import instance from '../api/apiInstances';
 
 const SignIn = () => {
@@ -7,6 +8,7 @@ const SignIn = () => {
   const [otp, setOtp] = useState('');
   const [step, setStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const { login, isLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const isPhoneNumber = (identifier) => /^[0-9]{10}$/.test(identifier);
@@ -14,8 +16,7 @@ const SignIn = () => {
 
   // Check if user is already logged in when the component mounts
   useEffect(() => {
-    const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-    if (userInfo) {
+    if (isLoggedIn) {
       // If user info exists in localStorage, consider them logged in
       alert('You are already logged in.');
       navigate('/'); // Redirect to home page or dashboard
@@ -72,7 +73,7 @@ const SignIn = () => {
           JSON.stringify({ email: identifier, token: data.token }) // Assuming backend sends a token
         );
         alert('OTP verified. You are now logged in.');
-        window.dispatchEvent(new Event('userLogin')); // Custom event if needed for state changes
+        login();
         navigate('/'); // Redirect after login
       } else {
         alert('Invalid OTP. Please try again.');
@@ -83,7 +84,7 @@ const SignIn = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [identifier, otp, navigate]);
+  }, [identifier, otp, navigate, login]);
 
   return (
     <div className="inset-0 h-screen flex items-center justify-center bg-gray-400 bg-opacity-50 z-50">

@@ -1,8 +1,10 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 import instance from '../api/apiInstances';
 
 const SignUp = () => {
+  const {login} = useContext(AuthContext);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [mobile, setMobile] = useState('');
@@ -80,8 +82,8 @@ const SignUp = () => {
         gender
       });
       localStorage.setItem('userInfo', JSON.stringify(data));
-      window.dispatchEvent(new Event("userLogin"));
       alert('Registration successful! Redirecting to homepage...');
+      login();
       navigate('/'); 
     } catch (error) {
       console.error('Error registering:', error);

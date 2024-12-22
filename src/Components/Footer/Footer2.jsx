@@ -6,10 +6,10 @@ const Footer = () => {
   return (
   
 <footer className="bg-black border-t-2 border-red-400  bottom-0">
-<div class="text-white p-4 lg:flex">
+<div className="text-white p-4 lg:flex">
 
     <div className='m-auto'>
-        <div class="m-auto px-auto">
+        <div className="m-auto px-auto">
           <div className="flex items-center
           mx-auto space-x-1 ">
             <img src="https://img.icons8.com/external-outline-black-m-oki-orlando/32/40C057/external-hawker-retail-outline-outline-black-m-oki-orlando.png"  alt="external-hawker-retail-outline-outline-black-m-oki-orlando"/>
@@ -18,15 +18,15 @@ const Footer = () => {
           <p className="text-center">From Street to Screen, Hawkers Bridges the Gap</p>
         </div>
 
-        <div class="mt-2">
-          <a href="link_to_app" class="text-green-600 underline">Get the App</a>
+        <div className="mt-2">
+          <a href="link_to_app" className="text-green-600 underline">Get the App</a>
         </div>
     </div>
   
   <div className='m-auto sm:flex'>
     <div className="flex">
     <div className="mt-2 p-4">
-    <h2 class="text-lg font-semibold mb-2">MY ACCOUNT</h2>
+    <h2 className="text-lg font-semibold mb-2">MY ACCOUNT</h2>
     <ul>
       <li><a href="my_profile_link" className="hover:text-green-600 font-light text-sm">My Profile</a></li>
       <li><a href="order_history_link" className="hover:text-green-600 font-light text-sm">Order History</a></li>

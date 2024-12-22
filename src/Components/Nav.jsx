@@ -1,15 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { AiOutlineClose, AiOutlineMenu } from 'react-icons/ai';
 import { useNavigate, Link } from 'react-router-dom';
 import ProfileDropdown from './ProfileDropdown';
+import { AuthContext } from '../context/AuthContext.jsx';
 import { HashLink } from 'react-router-hash-link';
 
+
 const Nav = () => {
+    const { isLoggedIn, login } = useContext(AuthContext);
     const [hidden, setHidden] = useState(true);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [profileImage, setProfileImage] = useState(null);
-    const [user, setUser] = useState(null);
     const [nav, setNav] = useState(false);
+    const [profileImage, setProfileImage] = useState('');
+    const [user, setUser] = useState(null);
     const [isMobile, setIsMobile] = useState(false);
     const [isProfileDropdown, setIsProfileDropdown] = useState(false);
     const [activeSection, setActiveSection] = useState('');
@@ -17,11 +19,10 @@ const Nav = () => {
     const navigate = useNavigate();  // Initialize useNavigate hook
 
     useEffect(() => {
-        const storedUserInfo = localStorage.getItem('userInfo');
-        if (storedUserInfo) {
-            const parsedUser = JSON.parse(storedUserInfo);
-            setIsLoggedIn(true);
-            setUser(parsedUser);
+        if (isLoggedIn) {
+            const parsedUser = JSON.parse(localStorage.getItem('userInfo'));
+            login();
+            // setUser(parsedUser);
             setProfileImage(parsedUser.profileImage);
         }
 
@@ -34,10 +35,10 @@ const Nav = () => {
         setNav(!nav);
     };
 
-    const signOut = () => {
-        localStorage.removeItem('userInfo');
-        navigate('/');
-    };
+    // const signOut = () => {
+    //     logout();
+    //     navigate('/');
+    // };
 
     const toggleProfileDropdown = () => {
         setActiveSection(activeSection === 'profile' ? '' : 'profile');
@@ -112,7 +113,7 @@ const Nav = () => {
                                 )}
                             </button>
                             <div className={`absolute right-0 mt-2 py-2 shadow-lg rounded-lg bg-white ${isProfileDropdown ? 'block' : 'hidden'}`}>
-                                <ProfileDropdown user={user} onLogout={signOut} />
+                                <ProfileDropdown />
                             </div>
                         </div>
                     ) : (
