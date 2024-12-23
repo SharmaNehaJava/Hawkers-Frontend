@@ -20,11 +20,12 @@ function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("App.jsx isLoggedIn:", isLoggedIn);
     if (!isLoggedIn) {
       navigate("/signin");
     }
 
-  }, [navigate]);
+  }, [navigate, isLoggedIn]);
 
   return (
     <div className="flex flex-col min-h-screen">

@@ -72,7 +72,7 @@ const SignUp = () => {
       alert('Please verify at least one contact detail (Email or Mobile).');
       return;
     }
-    
+    setIsLoading(true);
     try {
       const { data } = await axiosInstance.post('/api/users/register', {
         name,
@@ -89,7 +89,7 @@ const SignUp = () => {
       console.error('Error registering:', error);
       alert('Error registering user');
     }
-  }, [name, email, mobile, dob, gender, emailVerified, mobileVerified, navigate]);
+  }, [name, email, mobile, dob, gender, emailVerified,login, mobileVerified, navigate]);
 
   useEffect(() => {
     if (otpSent && resendTimer > 0) {

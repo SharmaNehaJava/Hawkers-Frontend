@@ -16,12 +16,13 @@ const SignIn = () => {
 
   // Check if user is already logged in when the component mounts
   useEffect(() => {
+    console.log("SignIn isLoggedIn:", isLoggedIn);
     if (isLoggedIn) {
       // If user info exists in localStorage, consider them logged in
       alert('You are already logged in.');
       navigate('/'); // Redirect to home page or dashboard
     }
-  }, [navigate]);
+  }, [navigate, isLoggedIn]);
 
   const handleSendOtp = useCallback(async () => {
     setIsLoading(true);
@@ -37,7 +38,7 @@ const SignIn = () => {
         setIsLoading(false);
         return;
       }
-
+      console.log("Method "+ method);
       const response = await instance.post('/api/users/request-otp', {
         identifier,
         method,
@@ -62,15 +63,17 @@ const SignIn = () => {
   const handleVerifyOtp = useCallback(async () => {
     setIsLoading(true);
     try {
+      console.log("Identifier "+ identifier);
       const { data } = await instance.post('/api/users/verify-otp', {
         identifier,
         otp,
       });
       if (data.verified) {
+        console.log("Token" +data.token);
         // Store token and user info in localStorage for persistent login
         localStorage.setItem(
           'userInfo',
-          JSON.stringify({ email: identifier, token: data.token }) // Assuming backend sends a token
+          JSON.stringify({ moblie: identifier, token: data.token }) // Assuming backend sends a token
         );
         alert('OTP verified. You are now logged in.');
         login();
