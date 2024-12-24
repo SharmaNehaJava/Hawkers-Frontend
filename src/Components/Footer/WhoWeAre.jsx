@@ -41,9 +41,10 @@ const WhoWeAre = () => {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 1, ease: 'easeOut' }}
           >
-            <h2 className="text-4xl md:text-5xl font-extrabold text-yellow-400 leading-tight mb-2">
-              About Us
-            </h2>
+        
+            <span className="block text-4xl font-extrabold text-green-600  p-2">
+            About us
+          </span>
             <span className="block text-sm md:text-md mb-2 text-green-600 font-semibold">
               (An online platform to provide your daily needs with an Indian touch)
             </span>
