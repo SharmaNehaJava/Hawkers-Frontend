@@ -4,7 +4,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import ProfileDropdown from './ProfileDropdown';
 import { AuthContext } from '../context/AuthContext.jsx';
 import { HashLink } from 'react-router-hash-link';
-
+import  CartContext  from '../context/cartContext.jsx';
 
 const Nav = () => {
     const { isLoggedIn, login } = useContext(AuthContext);
@@ -15,7 +15,10 @@ const Nav = () => {
     const [isMobile, setIsMobile] = useState(false);
     const [isProfileDropdown, setIsProfileDropdown] = useState(false);
     const [activeSection, setActiveSection] = useState('');
-    const [cartItems, setCartItems] = useState([]); // Track cart items
+    const [activeItem, setActiveItem] = useState(null); // Track active nav item
+    const [hoveredItem, setHoveredItem] = useState(null); // Track hovered item
+
+    const { cart } = useContext(CartContext);
     const navigate = useNavigate();  // Initialize useNavigate hook
 
     useEffect(() => {
@@ -27,18 +30,25 @@ const Nav = () => {
         }
 
         // Fetch cart items from localStorage or an API
-        const storedCartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
-        setCartItems(storedCartItems);
-    }, []);
+        // const storedCartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+        // setCartItems(storedCartItems);
+    }, [isLoggedIn, login]);
 
     const handleNav = () => {
         setNav(!nav);
     };
 
-    // const signOut = () => {
-    //     logout();
-    //     navigate('/');
-    // };
+    const handleNavItemClick = (id) => {
+        setActiveItem(id);
+    };
+
+    const handleMouseEnter = (item) => {
+        setHoveredItem(item);
+    };
+
+    const handleMouseLeave = () => {
+        setHoveredItem(null);
+    };
 
     const toggleProfileDropdown = () => {
         setActiveSection(activeSection === 'profile' ? '' : 'profile');
@@ -60,7 +70,7 @@ const Nav = () => {
         { id: 4, text: 'Blog', path: '/blog' },
         { id: 5, text: 'Contact', path: '/contact-us' },
     ];
-    
+
     return (
         <div className='fixed top-0 w-full z-50 bg-white shadow-md opacity-90'>
             <div className='flex justify-between items-center h-12 mx-2 px-4 text-black'>
@@ -74,7 +84,8 @@ const Nav = () => {
                         {navItems.map((item) => (
                             <li
                                 key={item.id}
-                                className='p-2 rounded-xl m-2 cursor-pointer duration-300 text-black hover:text-green-600 hover:scale-105'
+                                className={`p-2 rounded-xl m-2 cursor-pointer duration-300 text-black hover:text-green-600 hover:scale-105 ${activeItem === item.id ? 'text-green-600' : ''}`}
+                                onClick={() => handleNavItemClick(item.id)}
                             >
                                 {item.text === 'Product' ? (
                                     <HashLink smooth to={item.path}>
@@ -90,18 +101,32 @@ const Nav = () => {
 
                 <div className="flex items-center space-x-4">
                     {isLoggedIn && (
-                        <button
-                            onClick={toggleSearchComponent} // Toggle search visibility
-                            className={`p-2 rounded-full transition-colors duration-300 ${activeSection === 'search' ? 'bg-green-400' : 'hover:bg-green-300'}`}
+                        <div
+                            onMouseEnter={() => handleMouseEnter('search')}
+                            onMouseLeave={handleMouseLeave}
                         >
-                            <img className="h-8" src="https://img.icons8.com/ios/50/search--v1.png" alt="Search" />
-                        </button>
+                            <button
+                                onClick={toggleSearchComponent} // Toggle search visibility
+                                className={`p-2 rounded-full transition-colors duration-300 ${activeSection === 'search' ? 'bg-green-400' : ' hover:bg-green-300'}`}
+                            >
+                                <img className="h-8" src="https://img.icons8.com/ios/50/search--v1.png" alt="Search" />
+                            </button>
+                            {hoveredItem === 'search' && (
+                                <div className="absolute top-12 left-0 right-0 z-50 bg-white shadow-lg p-4">
+                                    <input
+                                        type="text"
+                                        placeholder="Search..."
+                                        className="w-full p-2 border border-gray-300 rounded"
+                                    />
+                                </div>
+                            )}
+                        </div>
                     )}
 
                     {isLoggedIn ? (
                         <div className="relative">
                             <button
-                                className={`bg-white rounded-full p-2 transition-colors duration-300 ${activeSection === 'profile' ? 'bg-green-400' : 'hover:bg-green-300'}`}
+                                className={`bg-white rounded-full p-2 transition-colors duration-300 ${activeSection === 'profile' ? 'bg-green-400' : ' hover:bg-green-300'}`}
                                 onClick={toggleProfileDropdown}
                             >
                                 {profileImage ? (
@@ -123,18 +148,29 @@ const Nav = () => {
                     )}
 
                     {isLoggedIn && (
-                        <div className="relative">
+                        <div
+                            onMouseEnter={() => handleMouseEnter('cart')}
+                            onMouseLeave={handleMouseLeave}
+                            className="relative"
+                        >
                             <button
-                                className={`p-2 rounded-full transition-colors duration-300 ${false ? 'bg-orange-500' : 'bg-white hover:bg-green-300'}`}
+                                className={`p-2 rounded-full transition-colors duration-300 ${false ? 'bg-orange-500' : ' hover:bg-green-300'} `}
                                 onClick={toggleCartPage}  // Navigate to cart page
                             >
                                 <img className="h-8" src="https://img.icons8.com/ios/50/shopping-cart--v1.png" alt="Cart" />
-                                {cartItems.length > 0 && (
-                                    <span className="absolute top-0 right-0 bg-orange-500 text-white text-xs rounded-full px-1">
+                                {cart.length > 0 && (
+                                    <span className="absolute top-0 right-0 bg-orange-300 text-white text-xs rounded-full px-1">
                                         {/* Display a dot if the cart is not empty */}
+                                        <span className="block w-2 h-2 bg-red-500 rounded-full"></span>
                                     </span>
                                 )}
                             </button>
+                            
+                            {hoveredItem === 'cart' && (
+                                <div className="absolute right-0 mt-2 py-2 shadow-lg rounded-lg bg-ornage-500">
+                                    {/* Cart component or function */}
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
@@ -145,17 +181,6 @@ const Nav = () => {
                     </div>
                 )}
             </div>
-
-            {/* Search Component */}
-            {!hidden && (
-                <div className="absolute top-12 left-0 right-0 z-50 bg-white shadow-lg p-4">
-                    <input
-                        type="text"
-                        placeholder="Search..."
-                        className="w-full p-2 border border-gray-300 rounded"
-                    />
-                </div>
-            )}
         </div>
     );
 };

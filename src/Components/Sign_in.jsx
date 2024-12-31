@@ -19,7 +19,6 @@ const SignIn = () => {
     console.log("SignIn isLoggedIn:", isLoggedIn);
     if (isLoggedIn) {
       // If user info exists in localStorage, consider them logged in
-      alert('You are already logged in.');
       navigate('/'); // Redirect to home page or dashboard
     }
   }, [navigate, isLoggedIn]);

@@ -33,44 +33,41 @@ function App() {
       <div className="flex-grow">
         <Suspense
           fallback={
-            <div className="w-screen h-screen flex flex-col items-center justify-center text-center bg-black text-white">
-            <img src="https://img.icons8.com/external-outline-black-m-oki-orlando/32/40C057/external-hawker-retail-outline-outline-black-m-oki-orlando.png" className="h-12 mb-4" alt="Logo" />
-            <h1 className="text-4xl font-bold mb-2">HAW<span style={{ color: '#10B71A' }}>KERS</span></h1>
-            <h4 className="text-lg mb-4">LOADING...</h4>
-            <div className="loader mt-4">
-              <div className="dot"></div>
-              <div className="dot"></div>
-              <div className="dot"></div>
-              <div className="dot"></div>
-              <div className="dot"></div>
+            <div className="w-screen h-screen flex flex-col items-center justify-center text-center bg-green-500 text-white">
+              <div className="loader mt-4">
+                <div className="dot"></div>
+                <div className="dot"></div>
+                <div className="dot"></div>
+                <div className="dot"></div>
+                <div className="dot"></div>
+              </div>
+              <style jsx>{`
+                .loader {
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+                }
+                .dot {
+                  width: 12px;
+                  height: 12px;
+                  margin: 0 6px;
+                  background-color: white;
+                  border-radius: 50%;
+                  animation: bounce 1.2s infinite ease-in-out;
+                }
+                @keyframes bounce {
+                  0%, 20%, 50%, 80%, 100% {
+                    transform: translateY(0);
+                  }
+                  40% {
+                    transform: translateY(-20px);
+                  }
+                  60% {
+                    transform: translateY(-10px);
+                  }
+                }
+              `}</style>
             </div>
-            <style jsx>{`
-              .loader {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-              }
-              .dot {
-                width: 12px;
-                height: 12px;
-                margin: 0 6px;
-                background-color: #10B71A;
-                border-radius: 50%;
-                animation: bounce 1.2s infinite ease-in-out;
-              }
-              @keyframes bounce {
-                0%, 20%, 50%, 80%, 100% {
-                  transform: translateY(0);
-                }
-                40% {
-                  transform: translateY(-20px);
-                }
-                60% {
-                  transform: translateY(-10px);
-                }
-              }
-            `}</style>
-          </div>
           }
         >
           <Routes>

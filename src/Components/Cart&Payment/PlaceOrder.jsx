@@ -1,236 +1,277 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
+import axiosInstance from '../../api/apiInstances';
 import CartContext from '../../context/cartContext';
+import { AuthContext } from '../../context/AuthContext';
 
-const PlaceOrder = ({ addresses }) => {
-  const { cart, total, deliveryFee, grandTotal } = useContext(CartContext);
+const PlaceOrder = () => {
+  const { cart } = useContext(CartContext);
+  const { isLoggedIn } = useContext(AuthContext);
+  const navigate = useNavigate();
 
-  // Address states
-//   const [selectedAddress, setSelectedAddress] = useState(
-//     addresses.find((address) => address.defaultAddress) || addresses[0]
-//   );
-//   const [isEditingAddress, setIsEditingAddress] = useState(false);
-//   const [newAddress, setNewAddress] = useState({
-//     name: '',
-//     mobileNumber: '',
-//     pincode: '',
-//     state: '',
-//     address: '',
-//     locality: '',
-//     city: '',
-//     defaultAddress: false,
-//   });
-//   const [isAddingAddress, setIsAddingAddress] = useState(false);
+  const [addresses, setAddresses] = useState([]);
+  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [isAddingAddress, setIsAddingAddress] = useState(false);
+  const [isEditingAddress, setIsEditingAddress] = useState(false);
+  const [newAddress, setNewAddress] = useState({
+    pincode: '',
+    state: '',
+    houseNumber: '',
+    building: '',
+    street: '',
+    area: '',
+    localityTown: '',
+    cityDistrict: '',
+    type: 'home',
+    isDefault: false,
+  });
+  const [successMessage, setSuccessMessage] = useState('');
 
-//   // Handle changes to new address fields
-//   const handleAddressChange = (e) => {
-//     setNewAddress({
-//       ...newAddress,
-//       [e.target.name]: e.target.value,
-//     });
-//   };
+  useEffect(() => {
+    if (!isLoggedIn) {
+      navigate('/signin');
+    } else {
+      // Fetch user addresses
+      const fetchAddresses = async () => {
+        try {
+          const response = await axiosInstance.get('/api/users/getaddresses');
+          setAddresses(response.data);
+          setSelectedAddress(response.data.find((address) => address.isDefault) || response.data[0]);
+        } catch (error) {
+          console.error('Error fetching addresses:', error);
+        }
+      };
 
-//   // Toggle new address form
-//   const toggleAddAddress = () => {
-//     setIsAddingAddress(!isAddingAddress);
-//   };
+      fetchAddresses();
+    }
+  }, [isLoggedIn, navigate]);
 
-//   // Save new address (Add functionality to save to backend if required)
-//   const saveAddress = () => {
-//     // Add new address logic here
-//     setIsAddingAddress(false);
-//   };
+  const handleAddressChange = (e) => {
+    setNewAddress({
+      ...newAddress,
+      [e.target.name]: e.target.value,
+    });
+  };
 
-//   // Cancel adding address
-//   const cancelAddAddress = () => {
-//     setNewAddress({
-//       name: '',
-//       mobileNumber: '',
-//       pincode: '',
-//       state: '',
-//       address: '',
-//       locality: '',
-//       city: '',
-//       defaultAddress: false,
-//     });
-//     setIsAddingAddress(false);
-//   };
+  const validateAddress = () => {
+    const { pincode, state, houseNumber, building, street, area, localityTown, cityDistrict } = newAddress;
+    return pincode && state && houseNumber && building && street && area && localityTown && cityDistrict;
+  };
+
+  const toggleAddAddress = () => {
+    setIsAddingAddress(!isAddingAddress);
+  };
+
+  const toggleEditAddress = (address) => {
+    setIsEditingAddress(true);
+    setNewAddress(address);
+  };
+
+  const saveAddress = async () => {
+    if (!validateAddress()) {
+      alert('Please fill in all required fields.');
+      return;
+    }
+
+    try {
+      const response = isEditingAddress
+        ? await axiosInstance.put(`/api/users/updateaddress/${newAddress._id}`, newAddress)
+        : await axiosInstance.post('/api/users/addaddresses', newAddress);
+      setAddresses([...addresses.filter(addr => addr._id !== response.data._id), response.data]);
+      setSelectedAddress(response.data.isDefault ? response.data : selectedAddress);
+      setIsAddingAddress(false);
+      setIsEditingAddress(false);
+      setNewAddress({
+        pincode: '',
+        state: '',
+        houseNumber: '',
+        building: '',
+        street: '',
+        area: '',
+        localityTown: '',
+        cityDistrict: '',
+        type: 'home',
+        isDefault: false,
+      });
+      setSuccessMessage('Address successfully added!');
+      setTimeout(() => setSuccessMessage(''), 3000); // Clear success message after 3 seconds
+    } catch (error) {
+      console.error('Error saving address:', error);
+    }
+  };
+
+  const cancelAddAddress = () => {
+    setNewAddress({
+      pincode: '',
+      state: '',
+      houseNumber: '',
+      building: '',
+      street: '',
+      area: '',
+      localityTown: '',
+      cityDistrict: '',
+      type: 'home',
+      isDefault: false,
+    });
+    setIsAddingAddress(false);
+    setIsEditingAddress(false);
+  };
+
+  const handlePlaceOrder = async () => {
+    try {
+      const orderData = {
+        cartItems: cart,
+        address: selectedAddress,
+        totalAmount: grandTotal,
+      };
+      const response = await axiosInstance.post('/api/orders', orderData);
+      // Redirect to payment gateway or order confirmation page
+      navigate('/order-success');
+    } catch (error) {
+      console.error('Error placing order:', error);
+    }
+  };
+
+  const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const gst = total * 0.18; // Assuming 18% GST
+  const platformFee = 9; // Example platform fee
+  const grandTotal = total + gst + platformFee;
 
   return (
-    <div className="place-order-container flex flex-col md:flex-row md:justify-between p-6 bg-gray-50 mt-10">
-      {/* Left Section: Address */}
-      {/* <div className="address-section w-full md:w-1/2 bg-white shadow-lg rounded-lg p-6 m-4">
-        <h2 className="font-bold text-xl mb-4 text-gray-700">Delivery Address</h2>
-        
-        {!isEditingAddress ? (
-          <>
-            <div className="selected-address bg-gray-100 p-4 rounded-md mb-4">
-              <div className="font-semibold">{selectedAddress.name}</div>
-              <div>Mobile: {selectedAddress.mobileNumber}</div>
-              <div>Pincode: {selectedAddress.pincode}</div>
-              <div>State: {selectedAddress.state}</div>
-              <div>Address: {selectedAddress.address}</div>
-              <div>Locality: {selectedAddress.locality}</div>
-              <div>City: {selectedAddress.city}</div>
-              <div>Default: {selectedAddress.defaultAddress ? 'Yes' : 'No'}</div>
-            </div>
-            <button
-              className="bg-blue-500 text-white py-2 px-4 rounded-lg w-full hover:bg-blue-600"
-              onClick={() => setIsEditingAddress(true)}
-            >
-              Edit Address
-            </button>
-          </>
-        ) : (
-          <>
-            <h3 className="font-bold mb-2">Select Address</h3>
-            {addresses.map((address, index) => (
-              <div
-                key={index}
-                className={`address-item p-2 rounded-md m-1 cursor-pointer transition-colors ${
-                  selectedAddress === address ? 'bg-green-100' : 'bg-gray-200 hover:bg-gray-300'
-                }`}
-                onClick={() => setSelectedAddress(address)}
-              >
-                <div>{address.name}</div>
-                <div>Mobile: {address.mobileNumber}</div>
-                <div>Pincode: {address.pincode}</div>
-                <div>State: {address.state}</div>
-                <div>Address: {address.address}</div>
-                <div>Locality: {address.locality}</div>
-                <div>City: {address.city}</div>
-                <div>Default: {address.defaultAddress ? 'Yes' : 'No'}</div>
-              </div>
-            ))}
-
-            
-            <button
-              className="bg-gray-100 py-2 px-4 rounded-lg text-gray-800 w-full mt-4 hover:bg-gray-200"
-              onClick={toggleAddAddress}
-            >
-              + Add New Address
-            </button>
-
-            {isAddingAddress && (
-              <div className="new-address-form mt-4 bg-gray-50 p-4 rounded-lg">
-                <input
-                  type="text"
-                  name="name"
-                  placeholder="Name"
-                  value={newAddress.name}
-                  onChange={handleAddressChange}
-                  className="border p-2 rounded w-full mb-2"
-                />
-                <input
-                  type="text"
-                  name="mobileNumber"
-                  placeholder="Mobile Number"
-                  value={newAddress.mobileNumber}
-                  onChange={handleAddressChange}
-                  className="border p-2 rounded w-full mb-2"
-                />
-                <input
-                  type="text"
-                  name="pincode"
-                  placeholder="Pincode"
-                  value={newAddress.pincode}
-                  onChange={handleAddressChange}
-                  className="border p-2 rounded w-full mb-2"
-                />
-                <input
-                  type="text"
-                  name="state"
-                  placeholder="State"
-                  value={newAddress.state}
-                  onChange={handleAddressChange}
-                  className="border p-2 rounded w-full mb-2"
-                />
-                <input
-                  type="text"
-                  name="address"
-                  placeholder="Address (house no, building no, area)"
-                  value={newAddress.address}
-                  onChange={handleAddressChange}
-                  className="border p-2 rounded w-full mb-2"
-                />
-                <input
-                  type="text"
-                  name="locality"
-                  placeholder="Locality"
-                  value={newAddress.locality}
-                  onChange={handleAddressChange}
-                  className="border p-2 rounded w-full mb-2"
-                />
-                <input
-                  type="text"
-                  name="city"
-                  placeholder="City/District"
-                  value={newAddress.city}
-                  onChange={handleAddressChange}
-                  className="border p-2 rounded w-full mb-2"
-                />
-                <div className="flex items-center mb-4">
-                  <input
-                    type="checkbox"
-                    name="defaultAddress"
-                    checked={newAddress.defaultAddress}
-                    onChange={(e) =>
-                      setNewAddress({
-                        ...newAddress,
-                        defaultAddress: e.target.checked,
-                      })
-                    }
-                    className="mr-2"
-                  />
-                  <label>Make Default</label>
-                </div>
-                <div className="flex justify-between">
-                  <button
-                    className="bg-gray-300 py-2 px-4 rounded-lg hover:bg-gray-400"
-                    onClick={cancelAddAddress}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
-                    onClick={saveAddress}
-                  >
-                    Save Address
-                  </button>
-                </div>
-              </div>
-            )}
-
-            
-            <button
-              className="bg-green-500 text-white py-2 px-4 rounded-lg w-full mt-4 hover:bg-green-600"
-              onClick={() => setIsEditingAddress(false)}
-            >
-              Save Changes
-            </button>
-          </>
-        )}
-      </div> */}
-
-      
-      <div className="order-summary w-full md:w-1/2 bg-white shadow-lg rounded-lg p-6 m-4">
-        <h2 className="font-bold text-xl mb-4 text-gray-700">Order Summary</h2>
-        <div className="flex justify-between mb-4">
-          <span className="font-semibold text-lg">Subtotal:</span>
-          <span>{total} Rs</span>
+    <div className="place-order p-6 bg-white shadow-lg rounded-lg max-w-4xl mx-auto mt-20 md:mt-10 lg:mt-6">
+      <h2 className="text-2xl md:text-3xl font-bold text-green-700 mb-6 text-center">Place Your Order</h2>
+      {successMessage && <div className="bg-green-100 text-green-700 p-2 rounded mb-4">{successMessage}</div>}
+      <div className="mb-6">
+        <h3 className="text-xl font-semibold mb-4">Order Summary</h3>
+        <div className="flex justify-between mb-2">
+          <span>Subtotal:</span>
+          <span>${total.toFixed(2)}</span>
         </div>
-        <div className="flex justify-between mb-4">
-          <span className="font-semibold text-lg">Platform Fee:</span>
-          <span>{deliveryFee} Rs</span>
+        <div className="flex justify-between mb-2">
+          <span>GST (18%):</span>
+          <span>${gst.toFixed(2)}</span>
         </div>
-        <div className="flex justify-between font-bold text-2xl text-green-700">
+        <div className="flex justify-between mb-2">
+          <span>Platform Fee:</span>
+          <span>${platformFee.toFixed(2)}</span>
+        </div>
+        <div className="flex justify-between mb-4 font-bold">
           <span>Total:</span>
-          <span>{grandTotal} Rs</span>
+          <span>${grandTotal.toFixed(2)}</span>
         </div>
-
-        <button className="bg-green-500 text-white py-3 px-4 rounded-lg w-full mt-6 hover:bg-green-600">
-          Pay Now
-        </button>
       </div>
+      <div className="mb-6">
+        <h3 className="text-xl font-semibold mb-4">Delivery Address</h3>
+        {selectedAddress ? (
+          <div className="border p-4 rounded-lg bg-gray-100 mb-4">
+            <p>{selectedAddress.houseNumber}, {selectedAddress.building}, {selectedAddress.street}, {selectedAddress.area}, {selectedAddress.localityTown}, {selectedAddress.cityDistrict}, {selectedAddress.state}, {selectedAddress.pincode}</p>
+            <button onClick={() => toggleEditAddress(selectedAddress)} className="bg-blue-500 text-white p-2 rounded mt-2">Edit Address</button>
+          </div>
+        ) : (
+          <p>No address selected</p>
+        )}
+        {addresses.length > 1 && (
+          <button onClick={() => setSelectedAddress(null)} className="bg-blue-500 text-white p-2 rounded mb-4">Change Address</button>
+        )}
+        <button onClick={toggleAddAddress} className="bg-blue-500 text-white p-2 rounded">Add New Address</button>
+      </div>
+      {isAddingAddress || isEditingAddress ? (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full relative">
+            <button onClick={cancelAddAddress} className="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
+              &times;
+            </button>
+            <h3 className="text-xl font-semibold mb-4">{isEditingAddress ? 'Edit Address' : 'Add New Address'}</h3>
+            <input
+              type="text"
+              name="pincode"
+              placeholder="Pincode"
+              value={newAddress.pincode}
+              onChange={handleAddressChange}
+              className="border p-1 rounded w-full mb-2"
+            />
+            <input
+              type="text"
+              name="state"
+              placeholder="State"
+              value={newAddress.state}
+              onChange={handleAddressChange}
+              className="border p-1 rounded w-full mb-2"
+            />
+            <input
+              type="text"
+              name="houseNumber"
+              placeholder="House Number"
+              value={newAddress.houseNumber}
+              onChange={handleAddressChange}
+              className="border p-1 rounded w-full mb-2"
+            />
+            <input
+              type="text"
+              name="building"
+              placeholder="Building"
+              value={newAddress.building}
+              onChange={handleAddressChange}
+              className="border p-1 rounded w-full mb-2"
+            />
+            <input
+              type="text"
+              name="street"
+              placeholder="Street"
+              value={newAddress.street}
+              onChange={handleAddressChange}
+              className="border p-1 rounded w-full mb-2"
+            />
+            <input
+              type="text"
+              name="area"
+              placeholder="Area"
+              value={newAddress.area}
+              onChange={handleAddressChange}
+              className="border p-1 rounded w-full mb-2"
+            />
+            <input
+              type="text"
+              name="localityTown"
+              placeholder="Locality/Town"
+              value={newAddress.localityTown}
+              onChange={handleAddressChange}
+              className="border p-1 rounded w-full mb-2"
+            />
+            <input
+              type="text"
+              name="cityDistrict"
+              placeholder="City/District"
+              value={newAddress.cityDistrict}
+              onChange={handleAddressChange}
+              className="border p-1 rounded w-full mb-2"
+            />
+            <select
+              name="type"
+              value={newAddress.type}
+              onChange={handleAddressChange}
+              className="border p-1 rounded w-full mb-2"
+            >
+              <option value="home">Home</option>
+              <option value="office">Office</option>
+              <option value="other">Other</option>
+            </select>
+            <label className="flex items-center mb-2">
+              <input
+                type="checkbox"
+                name="isDefault"
+                checked={newAddress.isDefault}
+                onChange={(e) => setNewAddress({ ...newAddress, isDefault: e.target.checked })}
+                className="mr-2"
+              />
+              Default Address
+            </label>
+            <button onClick={saveAddress} className="bg-green-500 text-white p-2 rounded mr-2">{isEditingAddress ? 'Update Address' : 'Save Address'}</button>
+            <button onClick={cancelAddAddress} className="bg-gray-500 text-white p-2 rounded">Cancel</button>
+          </div>
+        </div>
+      ) : null}
+      <button onClick={handlePlaceOrder} className="bg-green-500 text-white p-2 rounded w-full mt-4">Pay Now</button>
     </div>
   );
 };

@@ -4,16 +4,16 @@ import CartContext from '../../context/cartContext';
 import { Link } from 'react-router-dom';
 
 const Cart = () => {
-  const { cart, addToCart, removeFromCart } = useContext(CartContext);
+  const { cart, addToCart, removeFromCart, updateQuantity } = useContext(CartContext);
   const navigate = useNavigate(); // Hook for navigation
 
-  const handleIncrease = (productId, quantity, price) => {
-    addToCart(productId, quantity + 1, price);
+  const handleIncrease = (productId, quantity) => {
+    updateQuantity(productId, quantity + 1);
   };
 
-  const handleDecrease = (productId, quantity, price) => {
+  const handleDecrease = (productId, quantity) => {
     if (quantity > 1) {
-      addToCart(productId, quantity - 1, price);
+      updateQuantity(productId, quantity - 1);
     } else {
       removeFromCart(productId);
     }
@@ -24,8 +24,8 @@ const Cart = () => {
   };
 
   const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const deliveryFee = 9; // Example delivery fee
-  const grandTotal = total + deliveryFee;
+  const PlatformFee = 9; // Example delivery fee
+  const grandTotal = total + PlatformFee;
 
   return (
     <div className="cart p-6 bg-white shadow-lg rounded-lg max-w-4xl mx-auto mt-20 md:mt-10 lg:mt-6">
@@ -56,14 +56,14 @@ const Cart = () => {
               <span className="hidden md:inline-block">{item.price} Rs</span>
               <div className="flex items-center space-x-2">
                 <button
-                  onClick={() => handleDecrease(item._id, item.quantity, item.price)}
+                  onClick={() => handleDecrease(item.productId, item.quantity)}
                   className="px-2 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm md:text-base"
                 >
                   -
                 </button>
                 <span className="text-gray-800 font-medium">{item.quantity}</span>
                 <button
-                  onClick={() => handleIncrease(item._id, item.quantity, item.price)}
+                  onClick={() => handleIncrease(item.productId, item.quantity)}
                   className="px-2 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm md:text-base"
                 >
                   +
@@ -71,28 +71,29 @@ const Cart = () => {
               </div>
               <span>{item.price * item.quantity} Rs</span>
               <button
-                onClick={() => removeFromCart(item._id)}
+                onClick={() => removeFromCart(item.productId)}
                 className="px-2 md:px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm md:text-base"
               >
                 Remove
               </button>
             </div>
           ))}
+          
 
-          <div className="mt-8">
+          {/* <div className="mt-8">
             <div className="flex justify-between mb-4 text-sm md:text-lg">
               <span className="font-semibold">Subtotal:</span>
               <span>{total} Rs</span>
             </div>
             <div className="flex justify-between mb-4 text-sm md:text-lg">
               <span className="font-semibold">Platform Fee:</span>
-              <span>{deliveryFee} Rs</span>
+              <span>{PlatformFee} Rs</span>
             </div>
             <div className="flex justify-between font-bold text-xl md:text-2xl text-green-700">
               <span>Total:</span>
               <span>{grandTotal} Rs</span>
             </div>
-          </div>
+          </div> */}
 
           <button
             onClick={handleProceedToPay} // Attach the navigation function
