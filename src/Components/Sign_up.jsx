@@ -4,13 +4,12 @@ import { AuthContext } from '../context/AuthContext';
 import instance from '../api/apiInstances';
 
 const SignUp = () => {
-  const {login} = useContext(AuthContext);
+  const { login, isLoggedIn } = useContext(AuthContext);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [mobile, setMobile] = useState('');
   const [dob, setDob] = useState('');
   const [gender, setGender] = useState('');
-  const [emailVerified, setEmailVerified] = useState(false);
   const [mobileVerified, setMobileVerified] = useState(false);
   const [otp, setOtp] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -19,12 +18,12 @@ const SignUp = () => {
   const [resendTimer, setResendTimer] = useState(0);
   const navigate = useNavigate();
 
-  const handleSendOtp = useCallback(async (field) => {
+  const handleSendOtp = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await instance.post('/api/users/request-otp', { 
-        identifier: field === 'email' ? email : mobile, 
-        method: field === 'email' ? 'email' : 'sms',
+        identifier: mobile, 
+        method: 'sms',
         actionType: 'signup' // Specify action type as 'signup'
       });
   
@@ -43,15 +42,15 @@ const SignUp = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [email, mobile]);
-  
+  }, [mobile]);
 
-  const handleVerifyOtp = useCallback(async (field) => {
+  const handleVerifyOtp = useCallback(async () => {
     setIsLoading(true);
     try {
-      const { data } = await axiosInstance.post('/api/users/verify-otp', { identifier: field === 'email' ? email : mobile, otp });
+      const { data } = await instance.post('/api/users/verify-otp', { identifier: mobile, otp,
+        actionType: 'signup',  method: 'sms' });
       if (data.verified) {
-        field === 'email' ? setEmailVerified(true) : setMobileVerified(true);
+        setMobileVerified(true);
         alert('OTP verified successfully!');
       } else {
         alert('Invalid OTP. Please try again.');
@@ -64,32 +63,33 @@ const SignUp = () => {
       setOtpFieldVisible(false);
       setOtpSent(false);
     }
-  }, [email, mobile, otp]);
+  }, [mobile, otp]);
 
   const handleSignUp = useCallback(async (e) => {
     e.preventDefault();
-    if (!emailVerified && !mobileVerified) {
-      alert('Please verify at least one contact detail (Email or Mobile).');
+    if (!mobileVerified) {
+      alert('Please verify your mobile number first.');
       return;
     }
     setIsLoading(true);
     try {
-      const { data } = await axiosInstance.post('/api/users/register', {
-        name,
-        email,
-        mobile,
-        dob,
-        gender
-      });
-      localStorage.setItem('userInfo', JSON.stringify(data));
-      alert('Registration successful! Redirecting to homepage...');
+      const response = await instance.post('/api/users/register', { name, email, mobile, dob, gender });
+      console.log("Token: " + response.data.token);
+      // Store token and user info in localStorage for persistent login
+      localStorage.setItem(
+        'userInfo',
+        JSON.stringify({ mobile, token: response.data.token })
+      );
+      alert('Account created successfully. You are now logged in.');
       login();
-      navigate('/'); 
+      navigate('/');
     } catch (error) {
-      console.error('Error registering:', error);
-      alert('Error registering user');
+      console.error('Error during sign-up:', error);
+      alert('Failed to sign up. Please try again.');
+    } finally {
+      setIsLoading(false);
     }
-  }, [name, email, mobile, dob, gender, emailVerified,login, mobileVerified, navigate]);
+  }, [name, email, mobile, dob, gender, mobileVerified, login, navigate]);
 
   useEffect(() => {
     if (otpSent && resendTimer > 0) {
@@ -101,16 +101,24 @@ const SignUp = () => {
     }
   }, [otpSent, resendTimer]);
 
+  const handleClose = () => {
+    if (isLoggedIn) {
+      navigate('/');
+    } else {
+      navigate('/signin');
+    }
+  };
+
   return (
-    <div className="flex items-center justify-center bg-gray-400 bg-opacity-50 z-50">
-      <div className="relative bg-white rounded-lg shadow-lg w-screen max-w-md p-8 m-2">
+    <div className="flex justify-center items-center min-h-screen mt-12 bg-gray-100 p-4">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md relative">
         <button
-          className="w-6 bg-red-500 rounded-full absolute top-2 right-2 text-white hover:text-gray-900"
-          onClick={() => navigate('/')}
+          className="w-6 h-6 bg-red-500 rounded-full absolute top-2 right-2 text-white hover:text-gray-900 flex items-center justify-center"
+          onClick={handleClose}
         >
           &times;
         </button>
-        <h2 className="text-2xl font-bold text-gray-700 text-center mb-4 border-b-2">Create Your Account</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center">Sign Up</h2>
         <form onSubmit={handleSignUp}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
@@ -118,10 +126,11 @@ const SignUp = () => {
             </label>
             <input
               className="text-gray-700 border border-gray-300 rounded py-2 px-4 block w-full focus:outline-none focus:ring-2 focus:ring-blue-700"
-              type="text"
               id="name"
+              type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              placeholder="Enter your name"
               required
             />
           </div>
@@ -131,25 +140,12 @@ const SignUp = () => {
             </label>
             <input
               className="text-gray-700 border border-gray-300 rounded py-2 px-4 block w-full focus:outline-none focus:ring-2 focus:ring-blue-700"
-              type="email"
               id="email"
+              type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required={!mobile}
+              placeholder="Enter your email"
             />
-            {email && !emailVerified && (
-              <div className="mt-2">
-                <button
-                  type="button"
-                  className="bg-blue-500 text-white font-bold py-1 px-3 rounded hover:bg-blue-400"
-                  onClick={() => handleSendOtp('email')}
-                  disabled={isLoading || resendTimer > 0}
-                >
-                  {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : 'Send OTP'}
-                </button>
-              </div>
-            )}
-            {emailVerified && <p className="text-green-500 text-xs">Email Verified</p>}
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="mobile">
@@ -157,25 +153,16 @@ const SignUp = () => {
             </label>
             <input
               className="text-gray-700 border border-gray-300 rounded py-2 px-4 block w-full focus:outline-none focus:ring-2 focus:ring-blue-700"
-              type="text"
               id="mobile"
+              type="text"
               value={mobile}
               onChange={(e) => setMobile(e.target.value)}
-              required={!email} // Either email or mobile is required
+              placeholder="Enter your mobile number"
+              required
             />
-            {mobile && !mobileVerified && (
-              <div className="mt-2">
-                <button
-                  type="button"
-                  className="bg-blue-500 text-white font-bold py-1 px-3 rounded hover:bg-blue-400"
-                  onClick={() => handleSendOtp('mobile')}
-                  disabled={isLoading || resendTimer > 0}
-                >
-                  {resendTimer > 0 ? `Resend OTP in ${resendTimer}s` : 'Send OTP'}
-                </button>
-              </div>
-            )}
-            {mobileVerified && <p className="text-green-500 text-xs">Mobile Verified</p>}
+            <button type="button" onClick={handleSendOtp} className="bg-blue-500 text-white py-2 px-4 rounded mt-2">
+              {isLoading ? 'Sending OTP...' : 'Send OTP'}
+            </button>
           </div>
           {otpFieldVisible && (
             <div className="mb-4">
@@ -184,21 +171,15 @@ const SignUp = () => {
               </label>
               <input
                 className="text-gray-700 border border-gray-300 rounded py-2 px-4 block w-full focus:outline-none focus:ring-2 focus:ring-blue-700"
-                type="text"
                 id="otp"
+                type="text"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
+                placeholder="Enter OTP"
               />
-              <div className="mt-2">
-                <button
-                  type="button"
-                  className="bg-green-500 text-white font-bold py-1 px-3 rounded hover:bg-green-400"
-                  onClick={() => handleVerifyOtp(email ? 'email' : 'mobile')}
-                  disabled={isLoading}
-                >
-                  Verify OTP
-                </button>
-              </div>
+              <button type="button" onClick={handleVerifyOtp} className="bg-blue-500 text-white py-2 px-4 rounded mt-2">
+                {isLoading ? 'Verifying OTP...' : 'Verify OTP'}
+              </button>
             </div>
           )}
           <div className="mb-4">
@@ -207,8 +188,8 @@ const SignUp = () => {
             </label>
             <input
               className="text-gray-700 border border-gray-300 rounded py-2 px-4 block w-full focus:outline-none focus:ring-2 focus:ring-blue-700"
-              type="date"
               id="dob"
+              type="date"
               value={dob}
               onChange={(e) => setDob(e.target.value)}
               required
@@ -233,7 +214,7 @@ const SignUp = () => {
           </div>
           <button
             type="submit"
-            className="bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-400 w-full"
+            className="bg-blue-500 text-white py-2 px-4 rounded w-full"
             disabled={isLoading}
           >
             {isLoading ? 'Registering...' : 'Sign Up'}

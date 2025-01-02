@@ -16,16 +16,16 @@ const FAQ = lazy(() => import('./Components/Footer/FAQ'));
 
 function App() {
   const [category, setCategory] = useState("All");
-  const { isLoggedIn } = useContext(AuthContext);
+  // const { isLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    console.log("App.jsx isLoggedIn:", isLoggedIn);
-    if (!isLoggedIn) {
-      navigate("/signin");
-    }
+  // useEffect(() => {
+  //   console.log("App.jsx isLoggedIn:", isLoggedIn);
+  //   if (!isLoggedIn) {
+  //     navigate("/signin");
+  //   }
 
-  }, [navigate, isLoggedIn]);
+  // }, [navigate, isLoggedIn]);
 
   return (
     <div className="flex flex-col min-h-screen">

@@ -1,5 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import CartContext from '../../context/cartContext';
+import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../context/AuthContext.jsx';
 
 const FoodItem = ({ id, name, description, price, image }) => {
   const { addToCart, removeFromCart, cart } = useContext(CartContext);
@@ -7,6 +9,9 @@ const FoodItem = ({ id, name, description, price, image }) => {
   // Sync quantity with cart context
   const itemInCart = cart.find(item => item.productId === id);
   const [quantity, setQuantity] = useState(itemInCart ? itemInCart.quantity : 0);
+
+   const { isLoggedIn } = useContext(AuthContext);
+    const navigate = useNavigate();
 
   useEffect(() => {
     // Update quantity whenever cart changes
@@ -16,6 +21,15 @@ const FoodItem = ({ id, name, description, price, image }) => {
       setQuantity(0); // Item was removed from cart
     }
   }, [cart, itemInCart]); // Listening to changes in cart and item
+
+  
+  useEffect(() => {
+    console.log("App.jsx isLoggedIn:", isLoggedIn);
+    if (!isLoggedIn) {
+      navigate("/signin");
+    }
+
+  }, [navigate, isLoggedIn]);
 
   const handleAdd = () => {
     const newQuantity = quantity + 1;
