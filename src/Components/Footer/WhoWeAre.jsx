@@ -67,7 +67,7 @@ const WhoWeAre = () => {
 
       <div className="flex-1 px-6 py-4 m-8 text-justify text-gray-800 border-2 border-green-500 bg-gray-200">
           <motion.h2
-            className="text-2xl font-bold p-4 m-4 border-b-2 border-green-500 inline-block text-yellow-500 text-center justify-center"
+            className="text-2xl font-bold p-4 m-4 border-b-2 border-green-500 inline-block text-gray-700 text-center justify-center"
             initial="hidden"
             animate="visible"
             variants={underlineVariants}
@@ -81,13 +81,6 @@ const WhoWeAre = () => {
             and work-life balance go hand in hand. Our team thrives in an environment that
             fosters creativity, collaboration, and growth, ensuring that every member can
             contribute to our mission of connecting communities with local vendors.</p>
-
-            <p className='text-lg text-gray-800 mb-6 text-justify'>With
-            a vision to achieve milestones akin to industry giants like FANG, we are committed
-            to building a company that not only excels in business but also enriches the lives
-            of our employees. Join us and be a part of a journey towards excellence and a
-            billion-dollar turnover, while enjoying a fulfilling and balanced work life.
-          </p>
         </div>
         
         <div className="relative flex-1 overflow-hidden h-1/2 justify-center items-center p-2">

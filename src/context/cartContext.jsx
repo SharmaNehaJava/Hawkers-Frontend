@@ -4,56 +4,67 @@ const CartContext = createContext();
 
 const cartReducer = (state, action) => {
   switch (action.type) {
-    case 'ADD_ITEM': {
-      const existingItem = state.cart.find((item) => item.productId === action.payload.productId);
+    case 'ADD_TO_CART':
+      const existingItem = state.find(item => item.productId === action.payload.productId);
       if (existingItem) {
-        return {
-          ...state,
-          cart: state.cart.map((item) =>
-            item.productId === action.payload.productId
-              ? { ...item, quantity: action.payload.quantity }
-              : item
-          ),
-        };
-      } else {
-        return { ...state, cart: [...state.cart, action.payload] };
-      }
-    }
-    case 'REMOVE_ITEM':
-      return {
-        ...state,
-        cart: state.cart.filter((item) => item.productId !== action.payload),
-      };
-    case 'UPDATE_QUANTITY':
-      return {
-        ...state,
-        cart: state.cart.map(item =>
+        return state.map(item =>
           item.productId === action.payload.productId
-            ? { ...item, quantity: action.payload.quantity }
+            ? { ...item, quantity: item.quantity + 1 }
             : item
-        ),
-      };
+        );
+      } else {
+        return [...state, { ...action.payload, quantity: 1 }];
+      }
+    case 'REMOVE_FROM_CART':
+      const itemToRemove = state.find(item => item.productId === action.payload);
+      if (itemToRemove.quantity > 1) {
+        return state.map(item =>
+          item.productId === action.payload
+            ? { ...item, quantity: item.quantity - 1 }
+            : item
+        );
+      } else {
+        return state.filter(item => item.productId !== action.payload);
+      }
+    case 'UPDATE_CART':
+      return state.map(item =>
+        item.productId === action.payload.productId
+          ? { ...item, quantity: action.payload.quantity }
+          : item
+      );
+    case 'SET_QUANTITY_TO_ZERO':
+      return state.map(item =>
+        item.productId === action.payload
+          ? { ...item, quantity: 0 }
+          : item
+      );
     default:
       return state;
   }
 };
 
 export const CartProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(cartReducer, { cart: [] });
+  const [cart, dispatch] = useReducer(cartReducer, []);
 
-  const addToCart = (productId, quantity, price, image) => {
-    dispatch({ type: 'ADD_ITEM', payload: { productId, quantity, price, image } });
+  const addToCart = (product) => {
+    dispatch({ type: 'ADD_TO_CART', payload: { productId: product._id, name: product.name, price: product.price, imageUrl: product.imageUrl, vendor_id: product.vendor._id } });
   };
 
   const removeFromCart = (productId) => {
-    dispatch({ type: 'REMOVE_ITEM', payload: productId });
+    dispatch({ type: 'REMOVE_FROM_CART', payload: productId });
   };
-  const updateQuantity = (productId, quantity) => {
-    dispatch({ type: 'UPDATE_QUANTITY', payload: { productId, quantity } });
+
+  const updateCart = (productId, quantity) => {
+    dispatch({ type: 'UPDATE_CART', payload: { productId, quantity } });
+  };
+
+  const setQuantityToZero = (productId) => {
+    dispatch({ type: 'SET_QUANTITY_TO_ZERO', payload: productId });
+    dispatch({ type: 'REMOVE_FROM_CART', payload: productId });
   };
 
   return (
-    <CartContext.Provider value={{ cart: state.cart, addToCart, removeFromCart, updateQuantity }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateCart, setQuantityToZero }}>
       {children}
     </CartContext.Provider>
   );

@@ -4,8 +4,8 @@ const Categories = ({category, setCategory }) => {
     const categories = [
         { name:'All', img:"/categories/All.jpeg"},
         { name: 'Fruits', img: "/categories/Fruits.jpg" },
-        { name: 'Veges', img: '/categories/Veges.jpg' },
-        { name: 'Street Food', img: '/categories/StreetFood.jpg' },
+        { name: 'Vegetables', img: '/categories/Veges.jpg' },
+        { name: 'Fast Food', img: '/categories/StreetFood.jpg' },
         { name: 'Juices', img: '/categories/Juices.png' },
         { name: 'Dairy', img: '/categories/Dairy.jpg' },
     ];

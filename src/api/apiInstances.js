@@ -8,13 +8,23 @@ const instance = axios.create({
 });
 
 instance.interceptors.request.use((config) => {
-  const token = localStorage.getItem('authToken');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+  const userInfo = localStorage.getItem('userInfo');
+  if (userInfo) {
+    const { token } = JSON.parse(userInfo);
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+      // console.log('Token set in headers:', token); 
+    } else {
+      console.log('No token found in userInfo');
+    }
+  } else {
+    console.log('No userInfo found in local storage');
   }
   return config;
 }, (error) => {
   return Promise.reject(error);
 });
+
+
 
 export default instance;

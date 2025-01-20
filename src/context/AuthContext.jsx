@@ -7,22 +7,22 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-    console.log("AuthContext userInfo:", userInfo);
+    // console.log("AuthContext userInfo:", userInfo);
     if (userInfo && userInfo.token) {
       setIsLoggedIn(true);
-      console.log("AuthContext isLoggedIn set to true"); 
+      // console.log("AuthContext isLoggedIn set to true"); 
     }
   }, []);
 
   const login = () => {
     setIsLoggedIn(true);
-    console.log("AuthContext login called, isLoggedIn set to true");
+    // console.log("AuthContext login called, isLoggedIn set to true");
   };
 
   const logout = () => {
     localStorage.removeItem('userInfo');
     setIsLoggedIn(false);
-    console.log("AuthContext logout called, isLoggedIn set to false");
+    // console.log("AuthContext logout called, isLoggedIn set to false");
   };
 
   return (

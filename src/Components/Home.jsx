@@ -1,7 +1,7 @@
 // src/Components/Home.jsx
 import React, { useEffect, useState } from 'react';
 import Product from "./Product.jsx"
-// import Map from "./Map.jsx";
+import Map from "./Map.jsx";
 
 // Import all the images for the carousel
 import image1 from '/bananas.jpg';
@@ -10,6 +10,7 @@ import image3 from '/clothes.png';
 import image4 from '/fruits.jpg';
 import image5 from '/vegetable.jpg';
 import image6 from '/golgappe.jpg';
+
 
 
 // Carousel component
@@ -52,6 +53,7 @@ const Home = ({ category, setCategory }) => {
     <>
       <div className="home-container">
           <Carousel />
+          {/* <Map/> */}
           <Product category={category} setCategory={setCategory}/>
       </div>
     </>

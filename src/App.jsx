@@ -13,11 +13,13 @@ const WhoWeAre = lazy(() => import('./Components/Footer/WhoWeAre'));
 const Blog = lazy(() => import('./Components/Footer/Blog'));
 const Contact = lazy(() => import('./Components/Footer/Contact'));
 const FAQ = lazy(() => import('./Components/Footer/FAQ'));
+const PaymentPage = lazy(() => import('./Components/Cart&Payment/PaymentPage.jsx'));
+const OrderConfirmation = lazy(() => import('./Components/Cart&Payment/OrderConfirmationPage.jsx'));
 
 function App() {
   const [category, setCategory] = useState("All");
   // const { isLoggedIn } = useContext(AuthContext);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   // useEffect(() => {
   //   console.log("App.jsx isLoggedIn:", isLoggedIn);
@@ -81,6 +83,8 @@ function App() {
             <Route path="/contact-us" element={<Contact />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/place-order" element={<PlaceOrder />} />
+            <Route path="/payment" element={<PaymentPage />} />
+            <Route path="/order-confirmation" element={<OrderConfirmation />} />
           </Routes>
         </Suspense>
       </div>

@@ -3,11 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../api/apiInstances';
 import { AuthContext } from '../context/AuthContext';
 
-const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
+const ProfileDropdown = () => {
   const { isLoggedIn, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [userInfo, setUserInfo] = useState({});
+  const [orders, setOrders] = useState([]);
   const [activeSection, setActiveSection] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editField, setEditField] = useState(null);
@@ -29,26 +30,22 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
       navigate('/signin');
     } else {
       // Fetch user info and addresses
-      const fetchUserInfo = async () => {
+      const fetchUserData = async () => {
         try {
-          const response = await axiosInstance.get('/api/user/info');
-          setUserInfo(response.data);
+          const [userInfoResponse, ordersResponse, addressesResponse] = await Promise.all([
+            axiosInstance.get('/api/users/getprofile'),
+            axiosInstance.get('/api/users/orders'),
+            axiosInstance.get('/api/users/getaddresses'),
+          ]);
+          setUserInfo(userInfoResponse.data);
+          setOrders(ordersResponse.data);
+          setAddresses(addressesResponse.data);
         } catch (error) {
           console.error('Error fetching user info:', error);
         }
       };
 
-      const fetchAddresses = async () => {
-        try {
-          const response = await axiosInstance.get('/api/user/addresses');
-          setAddresses(response.data);
-        } catch (error) {
-          console.error('Error fetching addresses:', error);
-        }
-      };
-
-      fetchUserInfo();
-      fetchAddresses();
+      fetchUserData();
     }
   }, [isLoggedIn, navigate]);
 
@@ -75,9 +72,9 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
     setEditField(field);
   };
 
-  const saveAddress = async () => {
+  const handleAddAddress = async () => {
     try {
-      const response = await axiosInstance.post('/api/users/profile/addAddresses', newAddress);
+      const response = await axiosInstance.post('/api/users/addaddresses', newAddress);
       setAddresses([...addresses, response.data]);
       setIsAddingAddress(false);
       setNewAddress({
@@ -91,22 +88,36 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
         defaultAddress: false,
       });
     } catch (error) {
-      console.error('Error saving address:', error);
+      console.error('Error adding address:', error);
     }
   };
 
-  const cancelAddAddress = () => {
-    setIsAddingAddress(false);
-    setNewAddress({
-      name: '',
-      mobileNumber: '',
-      pincode: '',
-      state: '',
-      address: '',
-      locality: '',
-      city: '',
-      defaultAddress: false,
-    });
+  const handleUpdateAddress = async (id, updatedAddress) => {
+    try {
+      const response = await axiosInstance.put(`/api/users/updateaddress/${id}`, updatedAddress);
+      setAddresses(addresses.map(address => (address._id === id ? response.data : address)));
+    } catch (error) {
+      console.error('Error updating address:', error);
+    }
+  };
+
+  const handleDeleteAddress = async (id) => {
+    try {
+      await axiosInstance.delete(`/api/users/deleteaddress/${id}`);
+      setAddresses(addresses.filter(address => address._id !== id));
+    } catch (error) {
+      console.error('Error deleting address:', error);
+    }
+  };
+
+  const handleUpdateProfile = async () => {
+    try {
+      const response = await axiosInstance.put('/api/users/updateprofile', userInfo);
+      setUserInfo(response.data);
+      setEditField(null);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+    }
   };
 
   const handleSignOut = () => {
@@ -116,38 +127,14 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
 
   const handleDeleteAccount = async () => {
     try {
-      await axiosInstance.delete('/api/users/deleteAccount');
+      await axiosInstance.delete('/api/users/deleteaccount');
       localStorage.removeItem('userInfo');
-      logout();
-      navigate('/');
+      navigate('/signin');
     } catch (error) {
       console.error('Error deleting account:', error);
     }
   };
 
-  const saveUserInfo = async () => {
-    try {
-      const response = await axiosInstance.put('/api/users/profile/update', userInfo);
-      setUserInfo(response.data);
-      setIsEditing(false);
-    } catch (error) {
-      console.error('Error updating user info:', error);
-    }
-  };
-
-  const cancelEdit = () => {
-    setIsEditing(false);
-
-    const fetchUserInfo = async () => {
-      try {
-        const response = await axiosInstance.get('/api/users/profile');
-        setUserInfo(response.data);
-      } catch (error) {
-        console.error('Error fetching user info:', error);
-      }
-    };
-    fetchUserInfo();
-  };
 
   const renderSection = () => {
     switch (activeSection) {
@@ -201,16 +188,18 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
                 <div className='flex justify-between m-1'>
                 <button
                   className="bg-blue-800 text-white p-2 rounded hover:bg-blue-500"
-                  onClick={saveUserInfo}
+                  onClick={handleUpdateAddress}
                 >
                   Update
                 </button>
+
                 <button
                   className="bg-blue-800 text-white p-2 rounded hover:bg-blue-500"
                   onClick={cancelEdit}
                 >
                   Cancel
                 </button>
+
                 </div>
               </>
             ) : (
@@ -236,7 +225,16 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
           <div>
             <button onClick={() => setActiveSection(null)}>&larr; Back</button>
             <div className="font-bold">Order</div>
-            {/* Add order history and current order details here */}
+            <ul>
+              {orders.map(order => (
+                <li key={order._id} className="bg-gray-200 p-2 rounded-md m-1">
+                  <p>Order ID: {order._id}</p>
+                  <p>Date: {new Date(order.createdAt).toLocaleDateString()}</p>
+                  <p>Total: {order.totalPrice} Rs</p>
+                  <p>Status: {order.status}</p>
+                </li>
+              ))}
+            </ul>
           </div>
         );
       case 'addresses':
@@ -398,20 +396,20 @@ const ProfileDropdown = ({ onSignOut, onDeleteAccount }) => {
             Help Center
           </button>
 
-          {/* <div className="flex justify-between mt-4"> */}
-            {/* <button
+          <div className="flex justify-between mt-4">
+            <button
               className="bg-red-500 hover:bg-red-600 text-white p-2 rounded "
               onClick={handleDeleteAccount}
             >
               Delete Account
-            </button> */}
+            </button>
             <button
               className="bg-red-500 hover:bg-red-600 text-white  p-2 rounded-md"
               onClick={handleSignOut}
             >
               Sign Out
             </button>
-          {/* </div> */}
+          </div>
         </>
       )}
     </div>

@@ -6,13 +6,13 @@ import { AuthContext } from '../../context/AuthContext';
 
 const PlaceOrder = () => {
   const { cart } = useContext(CartContext);
+  console.log('Cart:', cart);
   const { isLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [addresses, setAddresses] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [isAddingAddress, setIsAddingAddress] = useState(false);
-  const [isEditingAddress, setIsEditingAddress] = useState(false);
   const [newAddress, setNewAddress] = useState({
     pincode: '',
     state: '',
@@ -35,6 +35,7 @@ const PlaceOrder = () => {
       const fetchAddresses = async () => {
         try {
           const response = await axiosInstance.get('/api/users/getaddresses');
+          console.log('Addresses fetched:', response.data);
           setAddresses(response.data);
           setSelectedAddress(response.data.find((address) => address.isDefault) || response.data[0]);
         } catch (error) {
@@ -62,11 +63,6 @@ const PlaceOrder = () => {
     setIsAddingAddress(!isAddingAddress);
   };
 
-  const toggleEditAddress = (address) => {
-    setIsEditingAddress(true);
-    setNewAddress(address);
-  };
-
   const saveAddress = async () => {
     if (!validateAddress()) {
       alert('Please fill in all required fields.');
@@ -74,13 +70,10 @@ const PlaceOrder = () => {
     }
 
     try {
-      const response = isEditingAddress
-        ? await axiosInstance.put(`/api/users/updateaddress/${newAddress._id}`, newAddress)
-        : await axiosInstance.post('/api/users/addaddresses', newAddress);
-      setAddresses([...addresses.filter(addr => addr._id !== response.data._id), response.data]);
-      setSelectedAddress(response.data.isDefault ? response.data : selectedAddress);
+      const response = await axiosInstance.post('/api/users/addaddresses', newAddress);
+      setAddresses([...addresses, response.data]);
+      setSelectedAddress(response.data);
       setIsAddingAddress(false);
-      setIsEditingAddress(false);
       setNewAddress({
         pincode: '',
         state: '',
@@ -114,19 +107,19 @@ const PlaceOrder = () => {
       isDefault: false,
     });
     setIsAddingAddress(false);
-    setIsEditingAddress(false);
   };
 
   const handlePlaceOrder = async () => {
     try {
+      // console.log(cart);
       const orderData = {
-        cartItems: cart,
+        amount: grandTotal,
         address: selectedAddress,
-        totalAmount: grandTotal,
+        cartItems: cart,
       };
-      const response = await axiosInstance.post('/api/orders', orderData);
-      // Redirect to payment gateway or order confirmation page
-      navigate('/order-success');
+      const response = await axiosInstance.post('/api/users/payment/order', orderData);
+      // Redirect to payment page with order details
+      navigate('/payment', { state: { order: response.data } });
     } catch (error) {
       console.error('Error placing order:', error);
     }
@@ -161,27 +154,27 @@ const PlaceOrder = () => {
         </div>
       </div>
       <div className="mb-6">
-        <h3 className="text-xl font-semibold mb-4">Delivery Address</h3>
-        {selectedAddress ? (
-          <div className="border p-4 rounded-lg bg-gray-100 mb-4">
-            <p>{selectedAddress.houseNumber}, {selectedAddress.building}, {selectedAddress.street}, {selectedAddress.area}, {selectedAddress.localityTown}, {selectedAddress.cityDistrict}, {selectedAddress.state}, {selectedAddress.pincode}</p>
-            <button onClick={() => toggleEditAddress(selectedAddress)} className="bg-blue-500 text-white p-2 rounded mt-2">Edit Address</button>
-          </div>
-        ) : (
-          <p>No address selected</p>
-        )}
-        {addresses.length > 1 && (
-          <button onClick={() => setSelectedAddress(null)} className="bg-blue-500 text-white p-2 rounded mb-4">Change Address</button>
-        )}
+        <h3 className="text-xl font-semibold mb-4">Select a Delivery Address</h3>
+        <select
+          className="border p-2 rounded w-full mb-4"
+          value={selectedAddress ? selectedAddress._id : ''}
+          onChange={(e) => setSelectedAddress(addresses.find(addr => addr._id === e.target.value))}
+        >
+          {addresses.map((address) => (
+            <option key={address._id} value={address._id}>
+              {address.houseNumber}, {address.building}, {address.street}, {address.area}, {address.localityTown}, {address.cityDistrict}, {address.state}, {address.pincode}
+            </option>
+          ))}
+        </select>
         <button onClick={toggleAddAddress} className="bg-blue-500 text-white p-2 rounded">Add New Address</button>
       </div>
-      {isAddingAddress || isEditingAddress ? (
+      {isAddingAddress && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full relative">
             <button onClick={cancelAddAddress} className="absolute top-2 right-2 text-gray-500 hover:text-gray-700">
               &times;
             </button>
-            <h3 className="text-xl font-semibold mb-4">{isEditingAddress ? 'Edit Address' : 'Add New Address'}</h3>
+            <h3 className="text-xl font-semibold mb-4">Add New Address</h3>
             <input
               type="text"
               name="pincode"
@@ -266,11 +259,11 @@ const PlaceOrder = () => {
               />
               Default Address
             </label>
-            <button onClick={saveAddress} className="bg-green-500 text-white p-2 rounded mr-2">{isEditingAddress ? 'Update Address' : 'Save Address'}</button>
+            <button onClick={saveAddress} className="bg-green-500 text-white p-2 rounded mr-2">Save Address</button>
             <button onClick={cancelAddAddress} className="bg-gray-500 text-white p-2 rounded">Cancel</button>
           </div>
         </div>
-      ) : null}
+      )}
       <button onClick={handlePlaceOrder} className="bg-green-500 text-white p-2 rounded w-full mt-4">Pay Now</button>
     </div>
   );

@@ -66,6 +66,8 @@ const SignIn = () => {
       const { data } = await instance.post('/api/users/verify-otp', {
         identifier,
         otp,
+        actionType: 'signin', 
+        method: 'sms' 
       });
       if (data.verified) {
         console.log("Token" +data.token);

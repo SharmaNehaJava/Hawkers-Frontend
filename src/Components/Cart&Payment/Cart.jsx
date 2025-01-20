@@ -4,16 +4,16 @@ import CartContext from '../../context/cartContext';
 import { Link } from 'react-router-dom';
 
 const Cart = () => {
-  const { cart, addToCart, removeFromCart, updateQuantity } = useContext(CartContext);
+  const { cart, addToCart, removeFromCart, updateCart, setQuantityToZero } = useContext(CartContext);
   const navigate = useNavigate(); // Hook for navigation
 
   const handleIncrease = (productId, quantity) => {
-    updateQuantity(productId, quantity + 1);
+    updateCart(productId, quantity + 1);
   };
 
   const handleDecrease = (productId, quantity) => {
     if (quantity > 1) {
-      updateQuantity(productId, quantity - 1);
+      updateCart(productId, quantity - 1);
     } else {
       removeFromCart(productId);
     }
@@ -44,11 +44,11 @@ const Cart = () => {
 
           {cart.map((item) => (
             <div 
-              key={item._id} // Use _id as the unique identifier
+              key={item.productId} // Use _id as the unique identifier
               className="grid grid-cols-4 md:grid-cols-6 gap-4 items-center mb-6 bg-gray-50 p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
             >
               <img 
-                src={item.image} 
+                src={item.imageUrl} 
                 alt={item.name} 
                 className="h-12 w-12 md:h-16 md:w-16 object-cover rounded-lg" 
               />
@@ -71,7 +71,7 @@ const Cart = () => {
               </div>
               <span>{item.price * item.quantity} Rs</span>
               <button
-                onClick={() => removeFromCart(item.productId)}
+                onClick={() => setQuantityToZero(item.productId)}
                 className="px-2 md:px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm md:text-base"
               >
                 Remove
