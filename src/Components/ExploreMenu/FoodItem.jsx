@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext.jsx';
 
 const FoodItem = ({ item}) => {
-  console.log('FoodItem item:', item);
+  // console.log('FoodItem item:', item);
   const { addToCart, removeFromCart,updateCart, cart } = useContext(CartContext);
 
   // Sync quantity with cart context

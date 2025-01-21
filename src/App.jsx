@@ -14,20 +14,10 @@ const Blog = lazy(() => import('./Components/Footer/Blog'));
 const Contact = lazy(() => import('./Components/Footer/Contact'));
 const FAQ = lazy(() => import('./Components/Footer/FAQ'));
 const PaymentPage = lazy(() => import('./Components/Cart&Payment/PaymentPage.jsx'));
-const OrderConfirmation = lazy(() => import('./Components/Cart&Payment/OrderConfirmationPage.jsx'));
+// const OrderConfirmation = lazy(() => import('./Components/Cart&Payment/OrderConfirmationPage.jsx'));
 
 function App() {
   const [category, setCategory] = useState("All");
-  // const { isLoggedIn } = useContext(AuthContext);
-  // const navigate = useNavigate();
-
-  // useEffect(() => {
-  //   console.log("App.jsx isLoggedIn:", isLoggedIn);
-  //   if (!isLoggedIn) {
-  //     navigate("/signin");
-  //   }
-
-  // }, [navigate, isLoggedIn]);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -84,7 +74,7 @@ function App() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/place-order" element={<PlaceOrder />} />
             <Route path="/payment" element={<PaymentPage />} />
-            <Route path="/order-confirmation" element={<OrderConfirmation />} />
+            {/* <Route path="/order-confirmation" element={<OrderConfirmation />} /> */}
           </Routes>
         </Suspense>
       </div>

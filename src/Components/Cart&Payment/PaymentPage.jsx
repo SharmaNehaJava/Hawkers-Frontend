@@ -4,7 +4,7 @@ import axiosInstance from '../../api/apiInstances';
 import CartContext from '../../context/cartContext';
 
 const PaymentPage = () => {
-  const { cart } = useContext(CartContext);
+  const { cart, clearCart } = useContext(CartContext);
   const navigate = useNavigate();
   const location = useLocation();
   const { order } = location.state;
@@ -16,7 +16,7 @@ const PaymentPage = () => {
       try {
         const { data } = await axiosInstance.get('/api/users/getKey');
         setRazorpayKey(data);
-        console.log("Razorpay key: ", data);
+        // console.log("Razorpay key: ", data);
       } catch (error) {
         console.error('Error fetching Razorpay key:', error);
       }
@@ -26,11 +26,11 @@ const PaymentPage = () => {
   }, []);
 
   useEffect(() => {
-    console.log('Order:', order);
+    // console.log('Order:', order);
     if (razorpayKey && order.razorpayOrder) {
       // Ensure Razorpay script is loaded
       if (typeof window.Razorpay === 'undefined') {
-        console.error('Razorpay script not loaded');
+        // console.error('Razorpay script not loaded');
         return;
       }
 
@@ -40,7 +40,7 @@ const PaymentPage = () => {
         amount: order.razorpayOrder.amount,
         currency: 'INR',
         name: 'Hawkers',
-        description: 'Payment for your order',
+        description: 'Pay for your order',
         order_id: order.razorpayOrder.id,
         handler: handlePaymentSuccess,
         prefill: {
@@ -49,7 +49,7 @@ const PaymentPage = () => {
           contact: '9999999999',
         },
         notes: {
-          address: 'Your Address',
+          address: order.orders[0].address,
         },
         theme: {
           color: '#3399cc',
@@ -65,12 +65,14 @@ const PaymentPage = () => {
     try {
       const { data } = await axiosInstance.post('/api/users/payment/success', {
         razorpayPaymentId: response.razorpay_payment_id,
-        address: order.address,
+        razorpayOrderId: response.razorpay_order_id,
+        razorpaySignature: response.razorpay_signature,
+        address: order.orders[0].address,
         cart: order.cartItems,
       });
       // Clear cart and navigate to order confirmation page
-      localStorage.removeItem(cart);
-      navigate('/order-confirmation', { state: { orders: data } });
+      clearCart();
+      navigate("/");
     } catch (error) {
       console.error('Payment success handling error:', error);
     }
@@ -78,7 +80,7 @@ const PaymentPage = () => {
 
   return (
     <div className="payment-page">
-      <h2 className="text-2xl font-bold text-center">Processing Payment...</h2>
+      <h2 className="text-2xl font-bold text-center">Verifying....</h2>
     </div>
   );
 };

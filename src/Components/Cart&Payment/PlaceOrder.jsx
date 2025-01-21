@@ -6,7 +6,7 @@ import { AuthContext } from '../../context/AuthContext';
 
 const PlaceOrder = () => {
   const { cart } = useContext(CartContext);
-  console.log('Cart:', cart);
+  // console.log('Cart:', cart);
   const { isLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -35,7 +35,7 @@ const PlaceOrder = () => {
       const fetchAddresses = async () => {
         try {
           const response = await axiosInstance.get('/api/users/getaddresses');
-          console.log('Addresses fetched:', response.data);
+          // console.log('Addresses fetched:', response.data);
           setAddresses(response.data);
           setSelectedAddress(response.data.find((address) => address.isDefault) || response.data[0]);
         } catch (error) {

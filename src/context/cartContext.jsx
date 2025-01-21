@@ -38,6 +38,8 @@ const cartReducer = (state, action) => {
           ? { ...item, quantity: 0 }
           : item
       );
+      case 'CLEAR_CART':
+        return [];
     default:
       return state;
   }
@@ -63,8 +65,12 @@ export const CartProvider = ({ children }) => {
     dispatch({ type: 'REMOVE_FROM_CART', payload: productId });
   };
 
+  const clearCart = () => {
+    dispatch({ type: 'CLEAR_CART' });
+  };
+
   return (
-    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateCart, setQuantityToZero }}>
+    <CartContext.Provider value={{ cart, addToCart, removeFromCart, updateCart, setQuantityToZero, clearCart }}>
       {children}
     </CartContext.Provider>
   );
