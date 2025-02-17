@@ -1,87 +1,115 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext, useRef } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import io from 'socket.io-client';
-
+import { LocationContext } from '../context/LocationContext';
+import { useSocket } from '../context/SocketContext.jsx';
 import instance from '../api/apiInstances';
 import VendorDetails from './VendorDetails.jsx';
 
-const socket = io('http://localhost:3000', {
-  reconnectionAttempts: 5, // Attempt to reconnect 5 times
-  reconnectionDelay: 1000, // Wait 1 second before attempting to reconnect
-});
-
 const Map = () => {
+  const { location } = useContext(LocationContext);
+  const socket = useSocket();
   const [vendors, setVendors] = useState([]);
   const [map, setMap] = useState(null);
   const [selectedVendor, setSelectedVendor] = useState(null);
   const [category, setCategory] = useState('');
   const [range, setRange] = useState(100);
   const [businessType, setBusinessType] = useState('');
+  const mapContainerRef = useRef(null);
+  const markersRef = useRef([]);
 
+  // Initialize the map
   useEffect(() => {
-    const fetchData = async () => {
+    if (!location || map || !mapContainerRef.current) return;
+
+    const mapInstance = L.map(mapContainerRef.current).setView([location.lat, location.lng], 16);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors',
+    }).addTo(mapInstance);
+
+    // Add user marker
+    const userMarker = L.marker([location.lat, location.lng], {
+      icon: createIcon('blue'),
+    })
+      .addTo(mapInstance)
+      .bindPopup('You are here')
+      .openPopup();
+
+    setMap(mapInstance);
+
+    return () => {
+      mapInstance.remove();
+    };
+  }, [location, mapContainerRef.current]);
+
+  // Fetch nearby vendors and add markers to the map
+  useEffect(() => {
+    if (!location || !map) return;
+
+    const fetchVendors = async () => {
       try {
-        const position = await getCurrentPosition();
-        const { latitude, longitude } = position.coords;
-
-        const mapInstance = L.map('map').setView([latitude, longitude], 16);
-        setMap(mapInstance);
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        }).addTo(mapInstance);
-
-        const userMarker = L.marker([latitude, longitude], { icon: createIcon('blue') }).addTo(mapInstance)
-          .bindPopup('You are here')
-          .openPopup();
-
         const response = await instance.get('/api/users/nearbyvendors', {
-          params: {
-            lat: latitude,
-            lng: longitude,
-            radius: range,
-            category,
-            businessType,
-          },
-        });
-        setVendors(response.data || []);
-        response.data.forEach(vendor => {
-          const vendorMarker = L.marker([vendor.location.lat, vendor.location.lng], { icon: createIcon(vendor.businessType === 'Moving' ? 'lightgreen' : 'darkgreen') }).addTo(mapInstance)
-            .bindTooltip(`<b>${vendor.name}</b>`, { permanent: false, direction: 'top' })
-            .on('click', () => handleVendorClick(vendor));
+          params: { lat: location.lat, lng: location.lng, radius: range, category, businessType },
         });
 
-        socket.emit('updateVendorLocation', { lat: latitude, lng: longitude });
+        const vendorArray = Array.isArray(response.data) ? response.data : [];
+        setVendors(vendorArray);
 
-        socket.on('vendorLocationUpdated', (data) => {
-          console.log('Vendor location updated:', data);
-          // Update vendor markers or other UI as needed
+        // Clear existing markers
+        markersRef.current.forEach((marker) => marker.remove());
+        markersRef.current = [];
+
+        // Add new markers
+        vendorArray.forEach((vendor) => {
+          if (vendor.location?.coordinates) {
+            const [vLng, vLat] = vendor.location.coordinates;
+            const marker = L.marker([vLat, vLng], {
+              icon: createIcon('red'),
+            })
+              .addTo(map)
+              .bindPopup(vendor.name)
+              .on('click', () => handleVendorClick(vendor));
+            markersRef.current.push(marker);
+          }
         });
 
-        setInterval(async () => {
-          const currentPosition = await getCurrentPosition();
-          const { latitude, longitude } = currentPosition.coords;
-          userMarker.setLatLng([latitude, longitude]);
-          mapInstance.setView([latitude, longitude], 16);
-          socket.emit('updateVendorLocation', { lat: latitude, lng: longitude });
-        }, 5000);
-
+        // Adjust map view to fit all markers
+        if (vendorArray.length > 0) {
+          const bounds = L.latLngBounds(vendorArray.map((vendor) => vendor.location.coordinates.reverse()));
+          map.fitBounds(bounds, { padding: [50, 50] });
+        }
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching vendors:', error);
       }
     };
 
-    fetchData();
+    fetchVendors();
+  }, [location, map, range, category, businessType]);
 
-  }, [category, range, businessType]);
+  // Listen for vendor location updates
+  useEffect(() => {
+    if (!socket) return;
 
-  const getCurrentPosition = () => {
-    return new Promise((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(resolve, reject);
+    socket.on('vendorLocationUpdated', ({ vendorId, coordinates }) => {
+      setVendors((prevVendors) =>
+        prevVendors.map((vendor) =>
+          vendor._id === vendorId ? { ...vendor, location: { coordinates } } : vendor
+        )
+      );
+
+      // Update the marker position on the map
+      const marker = markersRef.current.find((m) => m.vendorId === vendorId);
+      if (marker) {
+        marker.setLatLng([coordinates[1], coordinates[0]]);
+      }
     });
-  };
 
+    return () => {
+      socket.off('vendorLocationUpdated');
+    };
+  }, [socket]);
+
+  // Create a custom icon for markers
   const createIcon = (color) => {
     return L.icon({
       iconUrl: `https://maps.google.com/mapfiles/ms/icons/${color}-dot.png`,
@@ -91,6 +119,7 @@ const Map = () => {
     });
   };
 
+  // Handle vendor click
   const handleVendorClick = async (vendor) => {
     try {
       const response = await instance.get(`/api/users/vendorinfo/${vendor._id}`);
@@ -100,6 +129,7 @@ const Map = () => {
     }
   };
 
+  // Handle back to list
   const handleBackToList = () => {
     setSelectedVendor(null);
   };
@@ -107,7 +137,7 @@ const Map = () => {
   return (
     <div className='flex bg-gray-200 p-2'>
       <div style={{ position: 'relative', zIndex: 0 }} className='h-1/2 w-1/2 p-2'>
-        <div id="map" style={{ height: '400px', width: '100%' }} className='z-0'></div>
+        <div ref={mapContainerRef} id="map" style={{ height: '400px', width: '100%' }} className='z-0'></div>
       </div>
       <div className='h-1/2 w-1/2 p-2'>
         {selectedVendor ? (
@@ -146,19 +176,19 @@ const Map = () => {
                 value={businessType}
                 onChange={(e) => setBusinessType(e.target.value)}
               >
-                <option value="Both">Both</option>
-                <option value="Moving">Moving</option>
-                <option value="Stationary">Stationary</option>
+                <option value="All">Both</option>
+                <option value="moving">Moving</option>
+                <option value="stationary">Stationary</option>
               </select>
             </div>
-            <div className='mt-4 bg-gray-200 h-fit w-full'>
+            <div style={{ height: '250px' }} className='mt-4 bg-gray-200 w-full overflow-y-scroll'>
               {vendors.length === 0 ? (
                 <p className='text-center'>No vendors available</p>
               ) : (
                 vendors.map((vendor) => (
-                  <div key={vendor._id} className='border p-2 rounded mb-2'>
-                    <h4 className='text-lg font-bold'>{vendor.name}</h4>
-                    <p>Category: {vendor.category}</p>
+                  <div key={vendor._id} className='border p-2 rounded mb-2 flex justify-between text-center items-center bg-white mt-2 ml-2 mr-2 rounded-md hover:bg-green-200'>
+                    <h4 className='text-md font-bold'>{vendor.name}</h4>
+                    <p>Business Name: {vendor.businessName}</p>
                     <button
                       className='bg-blue-500 text-white py-1 px-2 rounded mt-2'
                       onClick={() => handleVendorClick(vendor)}

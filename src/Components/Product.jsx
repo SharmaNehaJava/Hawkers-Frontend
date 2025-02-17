@@ -9,8 +9,6 @@ import axios from '../api/apiInstances';
 
 const Product = ({ category, setCategory }) => {
   const [filteredItems, setFilteredItems] = useState([]); 
-  const [searchTerm, setSearchTerm] = useState('');
-
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -29,14 +27,7 @@ const Product = ({ category, setCategory }) => {
     fetchProducts();
   }, [category]);
 
-  const handleSearch = async () => {
-    try {
-      const response = await axios.get(`/api/products/search?name=${searchTerm}`);
-      setFilteredItems(response.data);
-    } catch (error) {
-      console.error('Error searching products:', error);
-    }
-  }
+ 
 
   return (
     <>

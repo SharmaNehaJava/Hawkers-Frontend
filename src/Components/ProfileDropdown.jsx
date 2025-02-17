@@ -227,7 +227,7 @@ const ProfileDropdown = () => {
             <div className="font-bold">Order</div>
             <ul>
               {orders.map(order => (
-                <li key={order._id} className="bg-gray-200 p-2 rounded-md m-1">
+                <li key={order._id} className="bg-gray-700 p-2 rounded-md m-1">
                   <p>Order ID: {order._id}</p>
                   <p>Date: {new Date(order.createdAt).toLocaleDateString()}</p>
                   <p>Total: {order.totalPrice} Rs</p>
@@ -243,7 +243,7 @@ const ProfileDropdown = () => {
             <button onClick={() => setActiveSection(null)}>&larr; Back</button>
             <div className="font-bold">Addresses</div>
             {addresses.map((address, index) => (
-              <div key={index} className="bg-gray-200 p-2 rounded-md m-1">
+              <div key={index} className="bg-gray-700 p-2 rounded-md m-1">
                 <div>Name: {address.name}</div>
                 <div>Mobile: {address.mobileNumber}</div>
                 <div>Pincode: {address.pincode}</div>
@@ -365,7 +365,7 @@ const ProfileDropdown = () => {
   };
 
   return (
-    <div className="absolute right-0  w-72 bg-gray-900 border border-gray-800 rounded-lg p-4 shadow-lg z-50 text-white">
+    <div className="absolute right-0 h-80 border-green-500 scroll overflow-x-hidden w-72 bg-gray-900 border-4 border-gray-800 rounded-lg p-4 shadow-lg z-50 text-white">
       {activeSection ? (
         renderSection()
       ) : (

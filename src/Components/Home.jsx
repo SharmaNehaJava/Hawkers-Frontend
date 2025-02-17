@@ -53,7 +53,7 @@ const Home = ({ category, setCategory }) => {
     <>
       <div className="home-container">
           <Carousel />
-          {/* <Map/> */}
+          <Map/>
           <Product category={category} setCategory={setCategory}/>
       </div>
     </>
