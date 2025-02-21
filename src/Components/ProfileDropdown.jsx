@@ -351,21 +351,21 @@ const ProfileDropdown = () => {
             )}
           </div>
         );
-      case 'helpCenter':
-        return (
-          <div>
-            <button onClick={() => setActiveSection(null)}>&larr; Back</button>
-            <div className="font-bold">Help Center</div>
-            {/* Add help center details here */}
-          </div>
-        );
+      // case 'helpCenter':
+      //   return (
+      //     <div>
+      //       <button onClick={() => setActiveSection(null)}>&larr; Back</button>
+      //       <div className="font-bold">Help Center</div>
+      //       {/* Add help center details here */}
+      //     </div>
+      //   );
       default:
         return null;
     }
   };
 
   return (
-    <div className="absolute right-0 h-80 border-green-500 scroll overflow-x-hidden w-72 bg-gray-900 border-4 border-gray-800 rounded-lg p-4 shadow-lg z-50 text-white">
+    <div className="absolute right-0 h-auto border-green-500 scroll overflow-x-hidden w-72 bg-gray-900 border-4 border-gray-800 rounded-lg p-4 shadow-lg z-50 text-white">
       {activeSection ? (
         renderSection()
       ) : (
@@ -389,12 +389,12 @@ const ProfileDropdown = () => {
           >
             Addresses
           </button>
-          <button
+          {/* <button
             className="w-full text-left py-2 px-4 rounded m-1 bg-gray-500 border-2 border-gray-500 hover:border-blue-500"
             onClick={() => setActiveSection('helpCenter')}
           >
             Help Center
-          </button>
+          </button> */}
 
           <div className="flex justify-between mt-4">
             <button
