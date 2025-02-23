@@ -16,7 +16,7 @@ const Nav = () => {
     const [nav, setNav] = useState(false);
     const [profileImage, setProfileImage] = useState('');
     const [user, setUser] = useState(null);
-    const [isMobile, setIsMobile] = useState(false);
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
     const [isProfileDropdown, setIsProfileDropdown] = useState(false);
     const [activeSection, setActiveSection] = useState('');
     const [activeItem, setActiveItem] = useState(null); // Track active nav item
@@ -118,17 +118,27 @@ const Nav = () => {
         { id: 4, text: 'Blog', path: '/blog' },
         { id: 5, text: 'Contact', path: '/contact-us' },
     ];
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 1024);
+        };
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     return (
         <div className='fixed top-0 w-full z-50 bg-white shadow-md opacity-90 h-12'>
             <div className='flex justify-between items-center h-12 mx-2 px-4 text-black'>
                 <div className="flex items-center space-x-1">
                     <img src="https://img.icons8.com/external-outline-black-m-oki-orlando/32/40C057/external-hawker-retail-outline-outline-black-m-oki-orlando.png" className="h-6" alt="Logo" />
-                    <img src="logo.png" alt="HAWKERS" className='h-8' />
+                    {!isMobile && (
+                        <img src="logo.png" alt="HAWKERS" className='h-8' />
+                    )}
+                    
                 </div>
 
                 {!isMobile && (
-                    <ul className='hidden lg:flex'>
+                    <ul className='hidden lg:flex  space-x-6'>
                         {navItems.map((item) => (
                             <li
                                 key={item.id}
@@ -155,7 +165,7 @@ const Nav = () => {
                         >
                             <button
                                 onClick={toggleSearchComponent} // Toggle search visibility
-                                className={`p-2 rounded-full transition-colors duration-300 ${activeSection === 'search' ? 'bg-green-400' : ' hover:bg-green-300'}`}
+                                className={`p-2 rounded-full transition-colors duration-300 ${activeSection === 'search' ? 'bg-green-300' : ' hover:bg-green-300'}`}
                             >
                                 <img className="h-8" src="https://img.icons8.com/ios/50/search--v1.png" alt="Search" />
                             </button>
@@ -224,7 +234,7 @@ const Nav = () => {
                     {isLoggedIn ? (
                         <div className="relative">
                             <button
-                                className={`bg-white rounded-full p-2 transition-colors duration-300 ${activeSection === 'profile' ? 'bg-green-400' : ' hover:bg-green-300'}`}
+                                className={`bg-white rounded-full p-2 transition-colors duration-300 ${activeSection === 'profile' ? 'bg-green-300' : ' hover:bg-green-300'}`}
                                 onClick={toggleProfileDropdown}
                             >
                                 {profileImage ? (
@@ -252,7 +262,7 @@ const Nav = () => {
                             className="relative"
                         >
                             <button
-                                className={`p-2 rounded-full transition-colors duration-300 ${false ? 'bg-orange-500' : ' hover:bg-green-300'} `}
+                                className={`p-2 rounded-full transition-colors duration-300 ${false ? 'bg-green-300' : ' hover:bg-green-300'} `}
                                 onClick={toggleCartPage}  // Navigate to cart page
                             >
                                 <img className="h-8" src="https://img.icons8.com/ios/50/shopping-cart--v1.png" alt="Cart" />
@@ -274,11 +284,25 @@ const Nav = () => {
                 </div>
 
                 {isMobile && (
-                    <div className="lg:hidden" onClick={handleNav}>
-                        {nav ? <AiOutlineClose size={20} color="black" /> : <AiOutlineMenu size={20} color="black" />}
-                    </div>
+                    <button className="lg:hidden" onClick={handleNav}>
+                        {nav ? <AiOutlineClose size={20} color="black" /> : <AiOutlineMenu size={24} color="black" />}
+                    </button>
                 )}
             </div>
+            {isMobile && nav && (
+                <div className="absolute top-12 right-0 w-48 bg-gray-900 border-2 border-green-500 text-white shadow-lg rounded-lg lg:hidden">
+                    <ul className="flex flex-col p-4">
+                        {navItems.map((item) => (
+                            <li key={item.id} className="py-2 bg-gray-500 px-4 m-1 text-left rounded ">
+                                <Link to={item.path} onClick={() => setNav(false)}>
+                                    {item.text}
+                                </Link>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+
         </div>
     );
 };

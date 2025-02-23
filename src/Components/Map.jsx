@@ -17,6 +17,15 @@ const Map = () => {
   const [businessType, setBusinessType] = useState('');
   const mapContainerRef = useRef(null);
   const markersRef = useRef([]);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 1024);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Initialize the map
   useEffect(() => {
@@ -135,22 +144,22 @@ const Map = () => {
   };
 
   return (
-    <div className='flex bg-gray-200 p-2'>
-      <div style={{ position: 'relative', zIndex: 0 }} className='h-1/2 w-1/2 p-2'>
+    <div className={`h-auto flex ${isMobile ? 'flex-col' : 'flex-row'} bg-gray-200 p-2`}>
+      <div style={{ position: 'relative', zIndex: 0 }} className={`h-1/2 ${isMobile ? 'w-full' : 'w-1/2'} p-2`}>
         <div ref={mapContainerRef} id="map" style={{ height: '400px', width: '100%' }} className='z-0'></div>
       </div>
-      <div className='h-1/2 w-1/2 p-2'>
+      <div className={`h-1/2 ${isMobile ? 'w-full' : 'w-1/2'} p-2`}>
         {selectedVendor ? (
           <div className='mt-4 bg-white p-2 rounded-md'>
             <button className='absolute top-2 right-2 text-red-500' onClick={handleBackToList}>X</button>
             <VendorDetails vendor={selectedVendor} />
           </div>
         ) : (
-          <div style={{ height: '400px', width: '100%' }} className='bg-white p-2 rounded-md'>
+          <div className='bg-white p-2 rounded-md w-full'>
             <h3 className='text-2xl font-sans underline mx-auto text-center'>Nearby Vendors</h3>
-            <div className='flex justify-around rounded-md mt-4 bg-gray-200 p-2 w-fit'>
+            <div className='flex flex-col sm:flex-row justify-around rounded-md mt-4 bg-gray-200 p-2 w-full'>
               <select
-                className="text-gray-700 border border-gray-300 rounded py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-700"
+                className="text-gray-700 border border-gray-300 rounded py-2 px-4 mb-2 sm:mb-0 focus:outline-none focus:ring-2 focus:ring-blue-700"
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
               >
@@ -163,7 +172,7 @@ const Map = () => {
                 <option value="Other">Other</option>
               </select>
               <select
-                className="text-gray-700 border border-gray-300 rounded py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-700"
+                className="text-gray-700 border border-gray-300 rounded py-2 px-4 mb-2 sm:mb-0 focus:outline-none focus:ring-2 focus:ring-blue-700"
                 value={range}
                 onChange={(e) => setRange(e.target.value)}
               >
@@ -181,12 +190,12 @@ const Map = () => {
                 <option value="stationary">Stationary</option>
               </select>
             </div>
-            <div style={{ height: '250px' }} className='mt-4 bg-gray-200 w-full overflow-y-scroll'>
+            <div className='mt-4 bg-gray-200 w-full overflow-y-scroll' style={{ maxHeight: '250px' }}>
               {vendors.length === 0 ? (
                 <p className='text-center'>No vendors available</p>
               ) : (
                 vendors.map((vendor) => (
-                  <div key={vendor._id} className='border p-2 rounded mb-2 flex justify-between text-center items-center bg-white mt-2 ml-2 mr-2 rounded-md hover:bg-green-200'>
+                  <div key={vendor._id} className=' border p-2 rounded mb-2 flex justify-between text-center items-center bg-white mt-2 ml-2 mr-2 hover:bg-green-200'>
                     <h4 className='text-md font-bold'>{vendor.name}</h4>
                     <p>Business Name: {vendor.businessName}</p>
                     <button

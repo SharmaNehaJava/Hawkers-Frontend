@@ -365,14 +365,14 @@ const ProfileDropdown = () => {
   };
 
   return (
-    <div className="absolute right-0 h-auto border-green-500 scroll overflow-x-hidden w-72 bg-gray-900 border-4 border-gray-800 rounded-lg p-4 shadow-lg z-50 text-white">
+    <div className="absolute right-0 h-auto border-2 border-green-500 scroll overflow-x-hidden w-72 bg-gray-900 rounded-lg p-4 shadow-lg z-50 text-white">
       {activeSection ? (
         renderSection()
       ) : (
         <>
           <button
-            className="w-full text-left m-1 py-2 px-4
-            bg-gray-500 rounded border-2 border-gray-500 hover:border-blue-500 "
+            className=" w-full text-left m-1 py-2 px-4
+            bg-gray-500 rounded  "
             onClick={() => setActiveSection('userInfo')}
           >
             User Info
