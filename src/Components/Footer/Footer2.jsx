@@ -13,7 +13,7 @@ const Footer = () => {
             <div className="flex items-center
           mx-auto space-x-1 ">
               <img src="https://img.icons8.com/external-outline-black-m-oki-orlando/32/40C057/external-hawker-retail-outline-outline-black-m-oki-orlando.png" alt="external-hawker-retail-outline-outline-black-m-oki-orlando" />
-              <img src="./public/BlackLogo.png" className="h-xl" alt="Logo" />
+              <img src="BlackLogo.png" className="h-xl" alt="Logo" />
             </div>
             <p className="text-center">From Street to Screen, Hawkers Bridges the Gap</p>
           </div>
