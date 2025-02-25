@@ -2,8 +2,9 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../api/apiInstances';
 import { AuthContext } from '../context/AuthContext';
+import { AiOutlineClose } from 'react-icons/ai';
 
-const ProfileDropdown = () => {
+const ProfileDropdown = ({ toggleProfileDropdown }) => {
   const { isLoggedIn, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -16,7 +17,7 @@ const ProfileDropdown = () => {
   const [addresses, setAddresses] = useState([]);
   const [newAddress, setNewAddress] = useState({
     name: '',
-    mobileNumber: '',
+    mobile: '',
     pincode: '',
     state: '',
     address: '',
@@ -37,6 +38,7 @@ const ProfileDropdown = () => {
             axiosInstance.get('/api/users/orders'),
             axiosInstance.get('/api/users/getaddresses'),
           ]);
+          console.log(addressesResponse.data);
           setUserInfo(userInfoResponse.data);
           setOrders(ordersResponse.data);
           setAddresses(addressesResponse.data);
@@ -60,7 +62,6 @@ const ProfileDropdown = () => {
       setNewAddress({ ...newAddress, [name]: checked });
     } else {
       setNewAddress({ ...newAddress, [name]: value });
-
     }
   };
 
@@ -79,7 +80,7 @@ const ProfileDropdown = () => {
       setIsAddingAddress(false);
       setNewAddress({
         name: '',
-        mobileNumber: '',
+        mobile: '',
         pincode: '',
         state: '',
         address: '',
@@ -135,7 +136,6 @@ const ProfileDropdown = () => {
     }
   };
 
-
   const renderSection = () => {
     switch (activeSection) {
       case 'userInfo':
@@ -143,73 +143,72 @@ const ProfileDropdown = () => {
           <div>
             <button onClick={() => setActiveSection(null)}>&larr; Back</button>
             <div className="mb-1 p-2">
-            {isEditing ? (
+              {isEditing ? (
                 <>
-                <input
-                  type="text"
-                  name="name"
-                  value={userInfo.name}
-                  placeholder='Name'
-                  onChange={handleInputChange}
-                  className="bg-gray-800 p-2 rounded-md m-1 w-full hover:bg-gray-500"
-                />
-                <input
-                  type="text"
-                  name="email"
-                  placeholder='E-mail'
-                  value={userInfo.email}
-                  onChange={handleInputChange}
-                  className="bg-gray-800 p-2 rounded-md m-1 w-full hover:bg-gray-500"
-                />
-                <input
-                  type="text"
-                  name="mobileNumber"
-                  value={userInfo.mobile}
-                  placeholder='Mobile Number'
-                  onChange={handleInputChange}
-                  className="bg-gray-800 p-2 rounded-md m-1 w-full hover:bg-gray-500"
-                />
-                <input
-                  type="text"
-                  name="dob"
-                  value={userInfo.dob}
-                  placeholder='Date Of Birth'
-                  onChange={handleInputChange}
-                  className="bg-gray-800 p-2 rounded-md m-1 w-full hover:bg-gray-500"
-                />
-                <input
-                  type="text"
-                  name="gender"
-                  value={userInfo.gender}
-                  placeholder='Gender-(Male, female, Other)'
-                  onChange={handleInputChange}
-                  className="bg-gray-800 p-2 rounded-md m-1 w-full hover:bg-gray-500"
-                />
-                <div className='flex justify-between m-1'>
-                <button
-                  className="bg-blue-800 text-white p-2 rounded hover:bg-blue-500"
-                  onClick={handleUpdateAddress}
-                >
-                  Update
-                </button>
+                  <input
+                    type="text"
+                    name="name"
+                    value={userInfo.name}
+                    placeholder='Name'
+                    onChange={handleInputChange}
+                    className="bg-gray-800 p-2 rounded-md m-1 w-full hover:bg-gray-500"
+                  />
+                  <input
+                    type="text"
+                    name="email"
+                    placeholder='E-mail'
+                    value={userInfo.email}
+                    onChange={handleInputChange}
+                    className="bg-gray-800 p-2 rounded-md m-1 w-full hover:bg-gray-500"
+                  />
+                  <input
+                    type="text"
+                    name="mobile"
+                    value={userInfo.mobile}
+                    placeholder='Mobile Number'
+                    onChange={handleInputChange}
+                    className="bg-gray-800 p-2 rounded-md m-1 w-full hover:bg-gray-500"
+                  />
+                  <input
+                    type="text"
+                    name="dob"
+                    value={userInfo.dob.split('T')[0]}
+                    placeholder='Date Of Birth'
+                    onChange={handleInputChange}
+                    className="bg-gray-800 p-2 rounded-md m-1 w-full hover:bg-gray-500"
+                  />
+                  <input
+                    type="text"
+                    name="gender"
+                    value={userInfo.gender}
+                    placeholder='Gender-(Male, female, Other)'
+                    onChange={handleInputChange}
+                    className="bg-gray-800 p-2 rounded-md m-1 w-full hover:bg-gray-500"
+                  />
+                  <div className='flex justify-between m-1'>
+                    <button
+                      className="bg-blue-800 text-white p-2 rounded hover:bg-blue-500"
+                      onClick={handleUpdateProfile}
+                    >
+                      Update
+                    </button>
 
-                <button
-                  className="bg-blue-800 text-white p-2 rounded hover:bg-blue-500"
-                  onClick={cancelEdit}
-                >
-                  Cancel
-                </button>
-
-                </div>
-              </>
-            ) : (
-              <>
-              <div className='bg-gray-800 p-2 rounded-md m-1'>Name: {userInfo.name}</div>
-              <div className='bg-gray-800 p-2 rounded-md m-1'>Email: {userInfo.email}</div>
-              <div className='bg-gray-800 p-2 rounded-md m-1'>Mobile: {userInfo.mobileNumber}</div>
-              <div className='bg-gray-800 p-2 rounded-md m-1'>DOB: {userInfo.dob}</div>
-              <div className='bg-gray-800 p-2 rounded-md m-1'>Gender: {userInfo.gender}</div>
-              <button
+                    <button
+                      className="bg-blue-800 text-white p-2 rounded hover:bg-blue-500"
+                      onClick={() => setIsEditing(false)}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className='bg-gray-800 p-2 rounded-md m-1'>Name: {userInfo.name}</div>
+                  <div className='bg-gray-800 p-2 rounded-md m-1'>Email: {userInfo.email}</div>
+                  <div className='bg-gray-800 p-2 rounded-md m-1'>Mobile: {userInfo.mobile}</div>
+                  <div className='bg-gray-800 p-2 rounded-md m-1'>DOB: {new Date(userInfo.dob).toLocaleDateString()}</div>
+                  <div className='bg-gray-800 p-2 rounded-md m-1'>Gender: {userInfo.gender}</div>
+                  <button
                     className="bg-blue-500 text-white p-2 rounded "
                     onClick={() => setIsEditing(true)}
                   >
@@ -228,10 +227,17 @@ const ProfileDropdown = () => {
             <ul>
               {orders.map(order => (
                 <li key={order._id} className="bg-gray-700 p-2 rounded-md m-1">
-                  <p>Order ID: {order._id}</p>
-                  <p>Date: {new Date(order.createdAt).toLocaleDateString()}</p>
-                  <p>Total: {order.totalPrice} Rs</p>
-                  <p>Status: {order.status}</p>
+                  {/* <p>Order ID: {order._id}</p> */}
+                  <p>Items:</p>
+                  <ul className='px-2 mb-1'>
+                    {order.items.map((item, index) => (
+                      <li key={index}>{item.name} - {item.quantity}</li>
+                    ))}
+                  </ul>
+                  <p className='mb-1'>Order Placed At: {new Date(order.createdAt).toLocaleDateString()}</p>
+                  <p className='mb-1'>Address: {order.address.houseNumber}, {order.address.building}, {order.address.street}, {order.address.cityDistrict}, {order.address.state}, {order.address.pincode}</p>
+                  {/* <p className='mb-1'>Total: {order.totalPrice} Rs</p> */}
+                  <p className='mb-1'>Status: {order.status}</p>
                 </li>
               ))}
             </ul>
@@ -244,14 +250,16 @@ const ProfileDropdown = () => {
             <div className="font-bold">Addresses</div>
             {addresses.map((address, index) => (
               <div key={index} className="bg-gray-700 p-2 rounded-md m-1">
-                <div>Name: {address.name}</div>
-                <div>Mobile: {address.mobileNumber}</div>
-                <div>Pincode: {address.pincode}</div>
-                <div>State: {address.state}</div>
-                <div>Address: {address.address}</div>
-                <div>Locality: {address.locality}</div>
-                <div>City: {address.city}</div>
-                <div>Default: {address.defaultAddress ? 'Yes' : 'No'}</div>
+                <div className='mb-1'>Type: {address.type}</div>
+                <div className='mb-1'>House Number: {address.houseNumber}</div>
+                <div className='mb-1'>Building: {address.building}</div>
+                <div className='mb-1'>Street: {address.street}</div>
+                <div className='mb-1'>Area: {address.area}</div>
+                <div className='mb-1'>Locality: {address.localityTown}</div>
+                <div className='mb-1'>City/District: {address.cityDistrict}</div>
+                <div className='mb-1'>State: {address.state}</div>
+                <div className='mb-1'>Pincode: {address.pincode}</div>
+                <div className='mb-1'>Default: {address.isDefault ? 'Yes' : 'No'}</div>
               </div>
             ))}
             <button
@@ -272,9 +280,9 @@ const ProfileDropdown = () => {
                 />
                 <input
                   type="text"
-                  name="mobileNumber"
+                  name="mobile"
                   placeholder="Mobile Number"
-                  value={newAddress.mobileNumber}
+                  value={newAddress.mobile}
                   onChange={handleAddressChange}
                   className="border p-1 rounded w-full mb-2"
                 />
@@ -336,13 +344,13 @@ const ProfileDropdown = () => {
                 <div className="flex justify-between">
                   <button
                     className="bg-gray-200 p-2 rounded text-gray-800"
-                    onClick={cancelAddAddress}
+                    onClick={() => setIsAddingAddress(false)}
                   >
                     Cancel
                   </button>
                   <button
                     className="bg-blue-500 p-2 rounded text-white"
-                    onClick={saveAddress}
+                    onClick={handleAddAddress}
                   >
                     Save Address
                   </button>
@@ -365,53 +373,58 @@ const ProfileDropdown = () => {
   };
 
   return (
-    <div className="absolute right-0 h-auto border-2 border-green-500 scroll overflow-x-hidden w-72 bg-gray-900 rounded-lg p-4 shadow-lg z-50 text-white">
-      {activeSection ? (
-        renderSection()
-      ) : (
-        <>
-          <button
-            className=" w-full text-left m-1 py-2 px-4
-            bg-gray-500 rounded  "
-            onClick={() => setActiveSection('userInfo')}
-          >
-            User Info
-          </button>
-          <button
-            className="w-full text-left py-2 px-4 rounded m-1 bg-gray-500 border-2 border-gray-500 hover:border-blue-500"
-            onClick={() => setActiveSection('order')}
-          >
-            Order
-          </button>
-          <button
-            className="w-full text-left py-2 px-4 rounded m-1 bg-gray-500 border-2 border-gray-500 hover:border-blue-500"
-            onClick={() => setActiveSection('addresses')}
-          >
-            Addresses
-          </button>
-          {/* <button
-            className="w-full text-left py-2 px-4 rounded m-1 bg-gray-500 border-2 border-gray-500 hover:border-blue-500"
-            onClick={() => setActiveSection('helpCenter')}
-          >
-            Help Center
-          </button> */}
+    <div className="fixed inset-0 flex items-center justify-center z-50">
+      <div className="fixed inset-0 bg-black opacity-50" onClick={toggleProfileDropdown}></div>
+      <div className="relative bg-gray-900 rounded-lg p-4 shadow-lg w-72 h-1/2 max-h-screen overflow-y-scroll text-white">
+        <button className="absolute top-2 right-2 text-white" onClick={toggleProfileDropdown}>
+          <AiOutlineClose size={24} />
+        </button>
+        {activeSection ? (
+          renderSection()
+        ) : (
+          <div className='mt-6'>
+            <button
+              className="w-full text-left m-1 py-2 px-4 bg-gray-500 rounded"
+              onClick={() => setActiveSection('userInfo')}
+            >
+              User Info
+            </button>
+            <button
+              className="w-full text-left py-2 px-4 rounded m-1 bg-gray-500 border-2 border-gray-500 hover:border-blue-500"
+              onClick={() => setActiveSection('order')}
+            >
+              Order
+            </button>
+            <button
+              className="w-full text-left py-2 px-4 rounded m-1 bg-gray-500 border-2 border-gray-500 hover:border-blue-500"
+              onClick={() => setActiveSection('addresses')}
+            >
+              Addresses
+            </button>
+            {/* <button
+              className="w-full text-left py-2 px-4 rounded m-1 bg-gray-500 border-2 border-gray-500 hover:border-blue-500"
+              onClick={() => setActiveSection('helpCenter')}
+            >
+              Help Center
+            </button> */}
 
-          <div className="flex justify-between mt-4">
-            <button
-              className="bg-red-500 hover:bg-red-600 text-white p-2 rounded "
-              onClick={handleDeleteAccount}
-            >
-              Delete Account
-            </button>
-            <button
-              className="bg-red-500 hover:bg-red-600 text-white  p-2 rounded-md"
-              onClick={handleSignOut}
-            >
-              Sign Out
-            </button>
+            <div className="flex justify-between mt-4">
+              <button
+                className="bg-red-500 hover:bg-red-600 text-white p-2 rounded"
+                onClick={handleDeleteAccount}
+              >
+                Delete Account
+              </button>
+              <button
+                className="bg-red-500 hover:bg-red-600 text-white p-2 rounded-md"
+                onClick={handleSignOut}
+              >
+                Sign Out
+              </button>
+            </div>
           </div>
-        </>
-      )}
+        )}
+      </div>
     </div>
   );
 };

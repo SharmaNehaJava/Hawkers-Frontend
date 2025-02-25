@@ -4,6 +4,8 @@ import { AuthContext } from './context/AuthContext.jsx';
 import Nav from './Components/Nav';
 import Footer2 from './Components/Footer/Footer2';
 import Home from './Components/Home';
+import NotFound from './Components/NotFound.jsx';
+
 const Cart = lazy(() => import("./Components/Cart&Payment/Cart"));
 const PlaceOrder = lazy(() => import('./Components/Cart&Payment/PlaceOrder'));
 const Sign_in = lazy(() => import('./Components/Sign_in'));
@@ -15,6 +17,7 @@ const Contact = lazy(() => import('./Components/Footer/Contact'));
 const FAQ = lazy(() => import('./Components/Footer/FAQ'));
 const PaymentPage = lazy(() => import('./Components/Cart&Payment/PaymentPage.jsx'));
 // const OrderConfirmation = lazy(() => import('./Components/Cart&Payment/OrderConfirmationPage.jsx'));
+
 
 function App() {
   const [category, setCategory] = useState("All");
@@ -75,6 +78,7 @@ function App() {
             <Route path="/place-order" element={<PlaceOrder />} />
             <Route path="/payment" element={<PaymentPage />} />
             {/* <Route path="/order-confirmation" element={<OrderConfirmation />} /> */}
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Suspense>
       </div>

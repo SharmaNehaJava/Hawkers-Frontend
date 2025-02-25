@@ -246,7 +246,7 @@ const Nav = () => {
                                 )}
                             </button>
                             <div className={`absolute right-0 mt-2 py-2 shadow-lg rounded-lg bg-white ${isProfileDropdown ? 'block' : 'hidden'}`}>
-                                <ProfileDropdown />
+                                <ProfileDropdown toggleProfileDropdown={toggleProfileDropdown} />
                             </div>
                         </div>
                     ) : (

@@ -5,6 +5,7 @@ import { LocationContext } from '../context/LocationContext';
 import { useSocket } from '../context/SocketContext.jsx';
 import instance from '../api/apiInstances';
 import VendorDetails from './VendorDetails.jsx';
+import { AiOutlineArrowLeft } from 'react-icons/ai';
 
 const Map = () => {
   const { location } = useContext(LocationContext);
@@ -12,6 +13,7 @@ const Map = () => {
   const [vendors, setVendors] = useState([]);
   const [map, setMap] = useState(null);
   const [selectedVendor, setSelectedVendor] = useState(null);
+  const[selectedVendorProducts, setSelectedVendorProducts] = useState([]);
   const [category, setCategory] = useState('');
   const [range, setRange] = useState(100);
   const [businessType, setBusinessType] = useState('');
@@ -60,6 +62,7 @@ const Map = () => {
         const response = await instance.get('/api/users/nearbyvendors', {
           params: { lat: location.lat, lng: location.lng, radius: range, category, businessType },
         });
+        console.log('Nearby vendors:', response.data);
 
         const vendorArray = Array.isArray(response.data) ? response.data : [];
         setVendors(vendorArray);
@@ -132,6 +135,9 @@ const Map = () => {
   const handleVendorClick = async (vendor) => {
     try {
       const response = await instance.get(`/api/users/vendorinfo/${vendor._id}`);
+      console.log('Vendor details:', response.data.vendor);
+      console.log('Vendor products:', response.data.products);
+      setSelectedVendorProducts(response.data.products);  
       setSelectedVendor(response.data.vendor);
     } catch (error) {
       console.error('Error fetching vendor details:', error);
@@ -144,15 +150,17 @@ const Map = () => {
   };
 
   return (
-    <div className={`h-auto flex ${isMobile ? 'flex-col' : 'flex-row'} bg-gray-200 p-2`}>
+    <div className={`h-auto flex ${isMobile ? 'flex-col' : 'flex-row'} bg-gray-200 p-2 align-items-center justify-center`}>
       <div style={{ position: 'relative', zIndex: 0 }} className={`h-1/2 ${isMobile ? 'w-full' : 'w-1/2'} p-2`}>
         <div ref={mapContainerRef} id="map" style={{ height: '400px', width: '100%' }} className='z-0'></div>
       </div>
       <div className={`h-1/2 ${isMobile ? 'w-full' : 'w-1/2'} p-2`}>
         {selectedVendor ? (
-          <div className='mt-4 bg-white p-2 rounded-md'>
-            <button className='absolute top-2 right-2 text-red-500' onClick={handleBackToList}>X</button>
-            <VendorDetails vendor={selectedVendor} />
+          <div className='mt-4 bg-white p-2 rounded-md relative'>
+            <button className='absolute top-2 left-2 text-black' onClick={handleBackToList}>
+              <AiOutlineArrowLeft size={24} />
+            </button>
+            <VendorDetails vendor={selectedVendor} products={selectedVendorProducts} />
           </div>
         ) : (
           <div className='bg-white p-2 rounded-md w-full'>
@@ -195,7 +203,7 @@ const Map = () => {
                 <p className='text-center'>No vendors available</p>
               ) : (
                 vendors.map((vendor) => (
-                  <div key={vendor._id} className=' border p-2 rounded mb-2 flex justify-between text-center items-center bg-white mt-2 ml-2 mr-2 hover:bg-green-200'>
+                  <div key={vendor._id} className='border p-2 rounded mb-2 flex justify-between text-center items-center bg-white mt-2 ml-2 mr-2 hover:bg-green-200'>
                     <h4 className='text-md font-bold'>{vendor.name}</h4>
                     <p>Business Name: {vendor.businessName}</p>
                     <button
