@@ -15,7 +15,7 @@ const Product = ({ category, setCategory }) => {
         let response;
         if (category === 'All') {
           response = await axios.get('/api/products');
-          console.log(response.data);
+          // console.log(response.data);
         } else {
           response = await axios.get(`/api/products/category/${category}`);
         }

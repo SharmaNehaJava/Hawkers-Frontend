@@ -237,7 +237,7 @@ const ProfileDropdown = ({ toggleProfileDropdown, setUser }) => {
                   <p className='mb-1'>Order Placed At: {new Date(order.createdAt).toLocaleDateString()}</p>
                   <p className='mb-1'>Address: {order.address.houseNumber}, {order.address.building}, {order.address.street}, {order.address.cityDistrict}, {order.address.state}, {order.address.pincode}</p>
                   {/* <p className='mb-1'>Total: {order.totalPrice} Rs</p> */}
-                  <p className='mb-1'>Status: {order.status}</p>
+                  <p className={`mb-1 flex `}>Status: <p className={`${order.status === 'failed' ? 'text-red-600' : 'text-blue-600'}`}>{order.status}</p></p>
                 </li>
               ))}
             </ul>
