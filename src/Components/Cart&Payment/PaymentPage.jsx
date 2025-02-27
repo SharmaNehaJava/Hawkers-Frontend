@@ -16,7 +16,6 @@ const PaymentPage = () => {
       try {
         const { data } = await axiosInstance.get('/api/users/getKey');
         setRazorpayKey(data);
-        // console.log("Razorpay key: ", data);
       } catch (error) {
         console.error('Error fetching Razorpay key:', error);
       }
@@ -26,15 +25,11 @@ const PaymentPage = () => {
   }, []);
 
   useEffect(() => {
-    // console.log('Order:', order);
     if (razorpayKey && order.razorpayOrder) {
-      // Ensure Razorpay script is loaded
       if (typeof window.Razorpay === 'undefined') {
-        // console.error('Razorpay script not loaded');
         return;
       }
 
-      // Initialize Razorpay payment options
       const options = {
         key: razorpayKey,
         amount: order.razorpayOrder.amount,
@@ -54,6 +49,9 @@ const PaymentPage = () => {
         theme: {
           color: '#3399cc',
         },
+        modal: {
+          ondismiss: handlePaymentFailure,
+        },
       };
 
       const rzp = new window.Razorpay(options);
@@ -70,17 +68,27 @@ const PaymentPage = () => {
         address: order.orders[0].address,
         cart: order.cartItems,
       });
-      // Clear cart and navigate to order confirmation page
       clearCart();
-      navigate("/");
+      navigate('/order-confirmation', { state: { orders: data.orders } });
     } catch (error) {
       console.error('Payment success handling error:', error);
     }
   };
 
+  const handlePaymentFailure = async () => {
+    try {
+      await axiosInstance.post('/api/users/payment/failure', {
+        orderId: order.razorpayOrder.id,
+      });
+      navigate('/order-failed');
+    } catch (error) {
+      console.error('Payment failure handling error:', error);
+    }
+  };
+
   return (
-    <div className="payment-page">
-      <h2 className="text-2xl font-bold text-center">Verifying....</h2>
+    <div className="payment-page mt-12">
+      <h2 className="text-2xl font-bold text-center">Opening Payment Dashboard...</h2>
     </div>
   );
 };

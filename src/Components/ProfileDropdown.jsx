@@ -4,7 +4,7 @@ import axiosInstance from '../api/apiInstances';
 import { AuthContext } from '../context/AuthContext';
 import { AiOutlineClose } from 'react-icons/ai';
 
-const ProfileDropdown = ({ toggleProfileDropdown }) => {
+const ProfileDropdown = ({ toggleProfileDropdown, setUser }) => {
   const { isLoggedIn, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -38,7 +38,7 @@ const ProfileDropdown = ({ toggleProfileDropdown }) => {
             axiosInstance.get('/api/users/orders'),
             axiosInstance.get('/api/users/getaddresses'),
           ]);
-          console.log(addressesResponse.data);
+          setUser(userInfoResponse.data.name);
           setUserInfo(userInfoResponse.data);
           setOrders(ordersResponse.data);
           setAddresses(addressesResponse.data);

@@ -3,10 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../api/apiInstances';
 import CartContext from '../../context/cartContext';
 import { AuthContext } from '../../context/AuthContext';
+import { FaArrowLeft } from 'react-icons/fa';
 
 const PlaceOrder = () => {
   const { cart } = useContext(CartContext);
-  // console.log('Cart:', cart);
   const { isLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -35,7 +35,6 @@ const PlaceOrder = () => {
       const fetchAddresses = async () => {
         try {
           const response = await axiosInstance.get('/api/users/getaddresses');
-          // console.log('Addresses fetched:', response.data);
           setAddresses(response.data);
           setSelectedAddress(response.data.find((address) => address.isDefault) || response.data[0]);
         } catch (error) {
@@ -111,7 +110,6 @@ const PlaceOrder = () => {
 
   const handlePlaceOrder = async () => {
     try {
-      // console.log(cart);
       const orderData = {
         amount: grandTotal,
         address: selectedAddress,
@@ -126,31 +124,32 @@ const PlaceOrder = () => {
   };
 
   const total = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
-  const gst = total * 0.18; // Assuming 18% GST
   const platformFee = 9; // Example platform fee
-  const grandTotal = total + gst + platformFee;
+  const grandTotal = total + platformFee;
 
   return (
-    <div className="place-order p-6 bg-white shadow-lg rounded-lg max-w-4xl mx-auto mt-20 md:mt-10 lg:mt-6">
+    <div className="place-order p-6 bg-white shadow-lg rounded-lg max-w-4xl mx-auto mt-20 md:mt-10 lg:mt-12">
+
+      <button onClick={() => navigate('/cart')} className=" text-gray-500 hover:text-gray-700">
+        <FaArrowLeft size={24} />
+      </button>
       <h2 className="text-2xl md:text-3xl font-bold text-green-700 mb-6 text-center">Place Your Order</h2>
+
+
       {successMessage && <div className="bg-green-100 text-green-700 p-2 rounded mb-4">{successMessage}</div>}
       <div className="mb-6">
         <h3 className="text-xl font-semibold mb-4">Order Summary</h3>
         <div className="flex justify-between mb-2">
           <span>Subtotal:</span>
-          <span>${total.toFixed(2)}</span>
-        </div>
-        <div className="flex justify-between mb-2">
-          <span>GST (18%):</span>
-          <span>${gst.toFixed(2)}</span>
+          <span>Rs{total.toFixed(2)}</span>
         </div>
         <div className="flex justify-between mb-2">
           <span>Platform Fee:</span>
-          <span>${platformFee.toFixed(2)}</span>
+          <span>Rs{platformFee.toFixed(2)}</span>
         </div>
         <div className="flex justify-between mb-4 font-bold">
           <span>Total:</span>
-          <span>${grandTotal.toFixed(2)}</span>
+          <span>Rs{grandTotal.toFixed(2)}</span>
         </div>
       </div>
       <div className="mb-6">

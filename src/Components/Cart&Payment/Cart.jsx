@@ -28,7 +28,7 @@ const Cart = () => {
   const grandTotal = total + PlatformFee;
 
   return (
-    <div className="cart p-6 bg-white shadow-lg rounded-lg max-w-4xl mx-auto mt-20 md:mt-10 lg:mt-6">
+    <div className="cart p-6 bg-white shadow-lg rounded-lg max-w-4xl mx-auto mt-20 md:mt-10 lg:mt-12">
       <h2 className="text-2xl md:text-3xl font-bold text-green-700 mb-6 text-center">Your Shopping Cart</h2>
 
       {cart.length > 0 ? (

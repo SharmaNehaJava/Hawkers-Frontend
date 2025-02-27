@@ -4,11 +4,12 @@ import { AuthContext } from './context/AuthContext.jsx';
 import Nav from './Components/Nav';
 import Footer2 from './Components/Footer/Footer2';
 import Home from './Components/Home';
-import NotFound from './Components/NotFound.jsx';
+import Sign_in from './Components/Sign_in';
 
+const NotFound  = lazy(()=> import ("./Components/NotFound.jsx"));
+const OrderFailedPage = lazy(()=>import ("./Components/Cart&Payment/OrderFailedPage.jsx"));
 const Cart = lazy(() => import("./Components/Cart&Payment/Cart"));
 const PlaceOrder = lazy(() => import('./Components/Cart&Payment/PlaceOrder'));
-const Sign_in = lazy(() => import('./Components/Sign_in'));
 const Sign_up = lazy(() => import('./Components/Sign_up'));
 const UserProfile = lazy(() => import('./Components/Profile/UserProfile'));
 const WhoWeAre = lazy(() => import('./Components/Footer/WhoWeAre'));
@@ -16,7 +17,7 @@ const Blog = lazy(() => import('./Components/Footer/Blog'));
 const Contact = lazy(() => import('./Components/Footer/Contact'));
 const FAQ = lazy(() => import('./Components/Footer/FAQ'));
 const PaymentPage = lazy(() => import('./Components/Cart&Payment/PaymentPage.jsx'));
-// const OrderConfirmation = lazy(() => import('./Components/Cart&Payment/OrderConfirmationPage.jsx'));
+const OrderConfirmation = lazy(() => import('./Components/Cart&Payment/OrderConfirmationPage.jsx'));
 
 
 function App() {
@@ -36,7 +37,7 @@ function App() {
                 <div className="dot"></div>
                 <div className="dot"></div>
               </div>
-              <style jsx>{`
+              <style jsx="true">{`
                 .loader {
                   display: flex;
                   justify-content: center;
@@ -77,8 +78,10 @@ function App() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/place-order" element={<PlaceOrder />} />
             <Route path="/payment" element={<PaymentPage />} />
-            {/* <Route path="/order-confirmation" element={<OrderConfirmation />} /> */}
+            <Route path="/order-confirmation" element={<OrderConfirmation />} />
+            <Route path="/order-failed" element={<OrderFailedPage />} />
             <Route path="*" element={<NotFound />} />
+
           </Routes>
         </Suspense>
       </div>

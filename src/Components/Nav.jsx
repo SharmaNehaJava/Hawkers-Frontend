@@ -165,7 +165,7 @@ const Nav = () => {
                         >
                             <button
                                 onClick={toggleSearchComponent} // Toggle search visibility
-                                className={`p-2 rounded-full transition-colors duration-300 ${activeSection === 'search' ? 'bg-green-300' : ' hover:bg-green-300'}`}
+                                className={`p-1.5 rounded-full transition-colors duration-300 ${activeSection === 'search' ? '' : ' hover:bg-green-200'}`}
                             >
                                 <img className="h-8" src="https://img.icons8.com/ios/50/search--v1.png" alt="Search" />
                             </button>
@@ -234,19 +234,19 @@ const Nav = () => {
                     {isLoggedIn ? (
                         <div className="relative">
                             <button
-                                className={`bg-white rounded-full p-2 transition-colors duration-300 ${activeSection === 'profile' ? 'bg-green-300' : ' hover:bg-green-300'}`}
+                                className={`bg-white rounded-full p-1.5 transition-colors duration-300 ${activeSection === 'profile' ? '' : ' hover:bg-green-200'}`}
                                 onClick={toggleProfileDropdown}
                             >
                                 {profileImage ? (
                                     <img className="h-8 w-8 rounded-full" src={profileImage} alt="User Profile" />
                                 ) : (
                                     <div className="h-8 w-8 bg-blue-500 text-white rounded-full flex items-center justify-center">
-                                        {user?.name?.charAt(0).toUpperCase()}
+                                        {user?.charAt(0).toUpperCase()}
                                     </div>
                                 )}
                             </button>
                             <div className={`absolute right-0 mt-2 py-2 shadow-lg rounded-lg bg-white ${isProfileDropdown ? 'block' : 'hidden'}`}>
-                                <ProfileDropdown toggleProfileDropdown={toggleProfileDropdown} />
+                                <ProfileDropdown setUser={setUser} toggleProfileDropdown={toggleProfileDropdown} />
                             </div>
                         </div>
                     ) : (
@@ -262,7 +262,7 @@ const Nav = () => {
                             className="relative"
                         >
                             <button
-                                className={`p-2 rounded-full transition-colors duration-300 ${false ? 'bg-green-300' : ' hover:bg-green-300'} `}
+                                className={`p-1.5 rounded-full transition-colors duration-300 ${false ? '' : ' hover:bg-green-200'} `}
                                 onClick={toggleCartPage}  // Navigate to cart page
                             >
                                 <img className="h-8" src="https://img.icons8.com/ios/50/shopping-cart--v1.png" alt="Cart" />

@@ -2,123 +2,84 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 const WhoWeAre = () => {
-  // Define the animation variants for the reel effect and underline
-  const reelVariants = {
-    hidden: { opacity: 0, x: '100%' },
-    visible: { opacity: 1, x: 0 },
-  };
-
-  const underlineVariants = {
-    hidden: { width: 0 },
-    visible: { width: '100%' },
-  };
-
   return (
-    <div className="relative bg-gray-200 h-auto">
-      {/* First Section: Our Mission & Story */}
-      <div className="relative bg-gray-200 p-10 h-auto">
-        <div className="absolute inset-0 flex justify-center items-center overflow-hidden">
-          <div className="relative w-full h-full">
-            <div className="absolute top-10 left-10 w-24 h-24 bg-green-400 opacity-40 rounded-full"></div>
-            <div className="absolute bottom-10 right-20 w-32 h-32 bg-green-600 opacity-50 rounded-full"></div>
-            <div className="absolute top-1/2 left-1/4 w-40 h-40 bg-green-700 opacity-30 rounded-full"></div>
-            <div className="absolute top-1/4 left-1/4 w-40 h-40 bg-green-700 opacity-30 rounded-full"></div>
-            <div className="absolute top-20 left-3/4 w-24 h-24 bg-green-400 opacity-40 rounded-full"></div>
-          </div>
+    <div className="relative min-h-screen bg-gradient-to-b from-green-200 via-blue-100 to-white p-10">
+      {/* First Section: About Us with GIF */}
+      <div className="flex flex-col lg:flex-row items-center gap-10">
+        <motion.img
+          className="w-60 lg:w-1/2 rounded-md "
+          src="3.png" // Replace with your actual GIF
+          alt="Who We Are"
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease: 'easeOut' }}
+        />
+        <motion.div
+          className="p-6 lg:p-10 bg-white rounded-lg shadow-xl border-2 border-orange-500 text-center lg:text-left"
+          initial={{ opacity: 0, x: -100 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 1, ease: 'easeOut' }}
+        >
+          <h1 className="text-4xl font-extrabold text-orange-500">Who We Are</h1>
+          <p className="text-lg text-gray-700 mt-4">
+            Hawkers connects local vendors with customers seeking fresh, authentic, and locally sourced products. We empower small businesses and bring the essence of street markets online.
+          </p>
+        </motion.div>
+      </div>
+
+      {/* Our Mission & Values */}
+      <div className="grid md:grid-cols-2 gap-10 my-16">
+        <div className="p-6 bg-white rounded-xl shadow-lg border-2 border-orange-500 text-center">
+          <h2 className="text-2xl font-semibold text-orange-500">Our Mission</h2>
+          <p className="text-gray-700 mt-2">
+            To create a seamless experience where local hawkers and street vendors can showcase their offerings, and customers can access fresh, affordable, and authentic products at their convenience.
+          </p>
         </div>
-        <div className="container mx-auto px-4 md:flex items-center relative z-2">
-          <motion.img
-            className="md:w-1/2 max-w-md mx-auto transition-transform transform hover:scale-105 m-2 rounded-full "
-            src="3.png" // Update this with the correct image path
-            alt="Decorative"
-            initial={{ opacity: 0, y: 100 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: 'easeOut' }}
-          />
-          <motion.div
-            className="m-2 md:mt-0 md:ml-10 text-center md:text-left bg-white rounded-md p-6 border-2 border-green-600 shadow-lg"
-            initial={{ opacity: 0, x: -100 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 1, ease: 'easeOut' }}
-          >
-        
-            <span className="block text-4xl font-extrabold text-green-600  p-2">
-            About us
-          </span>
-            <span className="block text-sm md:text-md mb-2 text-green-600 font-semibold">
-              (An online platform to provide your daily needs with an Indian touch)
-            </span>
-            <p className="text-lg text-gray-800 mb-6 text-justify">
-              Launched in 2024, our platform connects customers with local street vendors,
-              serving their diverse needs. Customers use our platform to discover vendors,
-              read and write reviews, view and upload photos, order deliveries, and make
-              payments for pick-ups.
-            </p>
-            <p className="text-lg text-gray-800 text-justify">
-              We provide vendors with marketing tools to grow their businesses and offer
-              reliable delivery services.
-            </p>
-          </motion.div>
+        <div className="p-6 bg-white rounded-xl shadow-lg border-2 border-orange-500 text-center">
+          <h2 className="text-2xl font-semibold text-orange-500">Our Values</h2>
+          <p className="text-gray-700 mt-2">
+            We stand for <strong>Trust, Quality, Local Empowerment, and Freshness</strong>. Every vendor is verified to ensure authenticity, and every product meets our quality standards.
+          </p>
         </div>
       </div>
 
-      {/* Second Section: Glimpses of Life at Hawkers */}
-      <div className="p-2 flex bg-white justify-center items-center h-screen">
+      {/* Why Choose Us */}
+      <div className="h-2/4 text-center max-w-5xl mx-auto">
+        <h2 className="text-2xl mt-16 font-semibold text-orange-500 mb-4">Why Choose Us?</h2>
+        <p className="text-lg text-gray-700">
+          We bring you the vibrant culture of local markets in a modern digital format. Support local businesses, enjoy fresh products, and embrace a community-driven shopping experience.
+        </p>
 
-      <div className="flex-1 px-6 py-4 m-8 text-justify text-gray-800 border-2 border-green-500 bg-gray-200">
-          <motion.h2
-            className="text-2xl font-bold p-4 m-4 border-b-2 border-green-500 inline-block text-gray-700 text-center justify-center"
-            initial="hidden"
-            animate="visible"
-            variants={underlineVariants}
-            transition={{ duration: 2 }}
+
+        {/* Motion Carousel at the End */}
+        <div className="flex flex-col lg:flex-row items-center justify-center gap-6 mt-12">
+          <motion.div
+            className="p-12 bg-gradient-to-r from-green-200 to-blue-100 rounded-lg text-center shadow-lg border-2 border-orange-500"
+            initial={{ opacity: 0, x: -100 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 1 }}
           >
-            Glimpses of Life at <span className='text-gray-700 uppercase text-4xl'>Haw
-              <span className='text-green-600'>Kers</span></span>
-          </motion.h2>
-          <p className="text-lg text-gray-800 mb-6 text-justify">
-            At Hawker, we believe in creating a future-oriented workplace where innovation
-            and work-life balance go hand in hand. Our team thrives in an environment that
-            fosters creativity, collaboration, and growth, ensuring that every member can
-            contribute to our mission of connecting communities with local vendors.</p>
-        </div>
-        
-        <div className="relative flex-1 overflow-hidden h-1/2 justify-center items-center p-2">
-          <div className="absolute flex">
+            <h2 className="text-3xl font-bold text-orange-500 mb-4">Life at Hawker</h2>
+            <p>
+              We foster innovation, collaboration, and growth, ensuring a vibrant workplace where creativity thrives.
+            </p>
+          </motion.div>
+          <motion.div className="relative w-full lg:w-1/2 overflow-hidden border-2 border-orange-500 rounded-lg">
             <motion.div
               className="flex"
               initial={{ x: 0 }}
               animate={{ x: ['0%', '-100%'] }}
-              transition={{
-                x: {
-                  duration: 20,
-                  ease: [0.1, 0.1, 0.2, 1], // Fast start and slow down
-                  repeat: Infinity,
-                  repeatType: 'loop',
-                },
-              }}
-              style={{ width: '200%' }} // Ensures enough space for seamless scrolling
+              transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
             >
-              {/* Images */}
-              <div className="flex">
-                <img className="w-full h-80 object-cover" src="/company1.avif" alt="Company Life 1" />
-                <img className="w-full h-80 object-cover" src="/company2.avif" alt="Company Life 2" />
-                <img className="w-full h-80 object-cover" src="/company6.jpg" alt="Company Life 3" />
-                <img className="w-full h-80 object-cover" src="/company3.jpg" alt="Company Life 4" />
-                <img className="w-full h-80 object-cover" src="/company4.jpg" alt="Company Life 5" />
-                {/* Duplicate images for seamless loop */}
-                <img className="w-full h-80 object-cover" src="/company1.avif" alt="Company Life 1" />
-                <img className="w-full h-80 object-cover" src="/company2.avif" alt="Company Life 2" />
-                <img className="w-full h-80 object-cover" src="/company6.jpg" alt="Company Life 3" />
-                <img className="w-full h-80 object-cover" src="/company3.jpg" alt="Company Life 4" />
-                <img className="w-full h-80 object-cover" src="/company4.jpg" alt="Company Life 5" />
-              </div>
+              <img className="w-60 h-50 object-cover m-2" src="/company1.avif" alt="Life 1" />
+              <img className="w-60 h-50 object-cover m-2" src="/company2.avif" alt="Life 2" />
+              <img className="w-60 h-50 object-cover m-2" src="/company3.jpg" alt="Life 3" />
+              <img className="w-60 h-50 object-cover m-2" src="/company4.jpg" alt="Life 4" />
+              <img className="w-60 h-50 object-cover m-2" src="/company6.jpg" alt="Life 5" />
             </motion.div>
-          </div>
+          </motion.div>
         </div>
-
       </div>
-
     </div>
   );
 };

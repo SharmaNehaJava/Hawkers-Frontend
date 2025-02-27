@@ -10,15 +10,15 @@ const Footer = () => {
 
         <div className='m-auto'>
           <div className="m-auto px-auto">
-            <div className="flex items-center
+            <div className="flex align-items-center justify-center
           mx-auto space-x-1 ">
-              <img src="https://img.icons8.com/external-outline-black-m-oki-orlando/32/40C057/external-hawker-retail-outline-outline-black-m-oki-orlando.png" alt="external-hawker-retail-outline-outline-black-m-oki-orlando" />
+              <img className='h-10 justify-center items-center my-auto' src="https://img.icons8.com/external-outline-black-m-oki-orlando/32/40C057/external-hawker-retail-outline-outline-black-m-oki-orlando.png" alt="external-hawker-retail-outline-outline-black-m-oki-orlando" />
               <img src="BlackLogo.png" className="h-xl" alt="Logo" />
             </div>
             <p className="text-center">From Street to Screen, Hawkers Bridges the Gap</p>
           </div>
 
-          <div className="mt-2">
+          <div className="mt-2 flex align-items-center justify-center">
             <a href="link_to_app" className="text-green-600 underline">Get the App</a>
           </div>
         </div>

@@ -9,9 +9,11 @@ const Blog = () => {
   useEffect(() => {
     const fetchArticles = async () => {
       try {
-        const response = await axios.get("/api/articles");
+        let response = await axios.get("/api/articles");
+        console.log("Articles:", response.data); // 🔍 Debugging step
         setArticles(response.data);
       } catch (err) {
+        console.error("Error fetching articles:", err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -21,7 +23,41 @@ const Blog = () => {
   }, []);
 
   if (loading) {
-    return <div className="text-center py-10">Loading...</div>;
+    return <div className="w-screen h-screen flex flex-col items-center justify-center text-center bg-green-500 text-white">
+    <div className="loader mt-4">
+      <div className="dot"></div>
+      <div className="dot"></div>
+      <div className="dot"></div>
+      <div className="dot"></div>
+      <div className="dot"></div>
+    </div>
+    <style jsx="true">{`
+      .loader {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .dot {
+        width: 12px;
+        height: 12px;
+        margin: 0 6px;
+        background-color: white;
+        border-radius: 50%;
+        animation: bounce 1.2s infinite ease-in-out;
+      }
+      @keyframes bounce {
+        0%, 20%, 50%, 80%, 100% {
+          transform: translateY(0);
+        }
+        40% {
+          transform: translateY(-20px);
+        }
+        60% {
+          transform: translateY(-10px);
+        }
+      }
+    `}</style>
+  </div>;
   }
 
   if (error) {

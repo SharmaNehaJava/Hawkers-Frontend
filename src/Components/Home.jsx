@@ -35,8 +35,8 @@ const Carousel = () => {
           className="w-full h-full object-cover transition-opacity duration-1000 ease-in-out"
         />
         <div className="absolute inset-0 flex flex-col justify-center items-center text-center text-white bg-black bg-opacity-50 ">
-          <h1 className="text-6xl md:text-5xl font-bold mb-2 shadow-2xl blur-3xl">
-            HAW<span className='text-green-700 '>KERS</span>
+          <h1 className="text-6xl md:text-5xl font-bold mb-2 shadow-2xl blur-3xl" >
+            HAW<span style={{ color: '#08A72F' }}>KERS</span>
           </h1>
           <p className="text-xl md:text-2xl">
             Enjoy delicious meals from various vendors near you!
