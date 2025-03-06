@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 const Footer = () => {
   return (
 
-    <footer className="bg-black border-t-2 border-red-400  bottom-0">
+    <footer className="bg-black border-t-2 border-red-400  bottom-0 ">
       <div className="text-white p-4 lg:flex">
 
         <div className='m-auto'>
@@ -40,9 +40,9 @@ const Footer = () => {
                 <li ><Link to="/who-we-are" className="hover:text-green-600 font-light text-sm">About us</Link></li>
                 <li><Link to="/contact-us" className="hover:text-green-600 font-light text-sm">Contact</Link></li>
                 <li><Link to="/faq" className="hover:text-green-600 font-light text-sm">FAQs</Link></li>
-                <li><Link to="/terms-and-condition" className="hover:text-green-600 font-light text-sm">Terms & Conditions</Link></li>
+                {/* <li><Link to="/terms-and-condition" className="hover:text-green-600 font-light text-sm">Terms & Conditions</Link></li>
                 <li><Link to="/privacy-policy" className="hover:text-green-600 font-light text-sm">Privacy Policy</Link></li>
-                <li><Link to="/return-policy" className="hover:text-green-600 font-light text-sm">Return Policy</Link></li>
+                <li><Link to="/return-policy" className="hover:text-green-600 font-light text-sm">Return Policy</Link></li> */}
               </ul>
             </div>
           </div>
@@ -63,7 +63,7 @@ const Footer = () => {
 
             <div className='mt-2 p-4'>
               <h2 className="text-lg font-semibold ">CONTACT US</h2>
-              <p className='font-light text-sm'>Phone: <a href="tel:phone_number" className="text-green-600 ">9356928367</a></p>
+              <p className='font-light text-sm'>Phone: <a href="tel:phone_number" className="text-green-600 ">9354724992</a></p>
               <p className='font-light text-sm'>Email: <a href="mailto:email_address" className="text-green-600 ">hawkers@gmail.com</a></p>
               <p className='font-light text-sm'>Timings: Open 24*7</p>
               <p className='font-light text-sm'>Address: Dwarika, New Delhi-43 </p>
@@ -91,11 +91,13 @@ const Footer = () => {
           </li>
 
           <li>
-            <a href="#" className="text-gray-500 transition hover:opacity-75"> Cookies </a>
+            <a href="#" className="text-gray-500 transition hover:opacity-75"> Return Policy </a>
           </li>
         </ul>
 
-
+        <p className=" text-xs text-gray-500 m-auto">
+          Developer- Neha Sharma (sharmaji2002178@gmail.com)
+        </p>
       </div>
     </footer>
   );
