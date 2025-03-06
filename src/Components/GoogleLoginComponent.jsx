@@ -6,7 +6,7 @@ const GoogleLoginComponent = ({ onLoginSuccess }) => {
   const clientId = '85478123981-movailm7ao3v4gnli8rpg2jcvlcva2ru.apps.googleusercontent.com'; // Replace with your actual client ID
 
   const handleSuccess = (response) => {
-    console.log('Login Success:', response);
+    // console.log('Login Success:', response);
     // Extract user info from the response
     const { profileObj } = response;
     // Call the parent component's onLoginSuccess handler

@@ -10,13 +10,14 @@ const SignIn = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { login, isLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [testMode, setTestMode] = useState(false); // Add test mode state
 
   const isPhoneNumber = (identifier) => /^[0-9]{10}$/.test(identifier);
   const isEmail = (identifier) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier);
 
   // Check if user is already logged in when the component mounts
   useEffect(() => {
-    console.log("SignIn isLoggedIn:", isLoggedIn);
+    // console.log("SignIn isLoggedIn:", isLoggedIn);
     if (isLoggedIn) {
       // If user info exists in localStorage, consider them logged in
       navigate('/'); // Redirect to home page or dashboard
@@ -37,11 +38,12 @@ const SignIn = () => {
         setIsLoading(false);
         return;
       }
-      console.log("Method "+ method);
+      // console.log("Method "+ method);
       const response = await instance.post('/api/users/request-otp', {
         identifier,
         method,
         actionType: 'signin', // Specify action type as 'signin'
+        testMode, // Include test mode
       });
 
       if (!response.data.userExists) {
@@ -57,24 +59,25 @@ const SignIn = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [identifier, navigate]);
+  }, [identifier, navigate, testMode]);
 
   const handleVerifyOtp = useCallback(async () => {
     setIsLoading(true);
     try {
-      console.log("Identifier "+ identifier);
+      // console.log("Identifier "+ identifier);
       const { data } = await instance.post('/api/users/verify-otp', {
         identifier,
         otp,
         actionType: 'signin', 
-        method: 'sms' 
+        method: 'sms',
+        testMode, // Include test mode
       });
       if (data.verified) {
-        console.log("Token" +data.token);
+        // console.log("Token" +data.token);
         // Store token and user info in localStorage for persistent login
         localStorage.setItem(
           'userInfo',
-          JSON.stringify({ moblie: identifier, token: data.token }) // Assuming backend sends a token
+          JSON.stringify({ mobile: identifier, token: data.token }) // Assuming backend sends a token
         );
         alert('OTP verified. You are now logged in.');
         login();
@@ -88,7 +91,7 @@ const SignIn = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [identifier, otp, navigate, login]);
+  }, [identifier, otp, navigate, login, testMode]);
 
   return (
     <div className="inset-0 h-screen flex items-center justify-center bg-gray-400 bg-opacity-50 z-50">
@@ -114,6 +117,17 @@ const SignIn = () => {
                 placeholder="Phone Number / Email ID"
                 onChange={(e) => setIdentifier(e.target.value)}
                 required
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="testMode">
+                Test Mode
+              </label>
+              <input
+                type="checkbox"
+                id="testMode"
+                checked={testMode}
+                onChange={(e) => setTestMode(e.target.checked)}
               />
             </div>
             <div className="mb-4">

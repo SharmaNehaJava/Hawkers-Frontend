@@ -10,7 +10,7 @@ const Blog = () => {
     const fetchArticles = async () => {
       try {
         let response = await axios.get("/api/articles");
-        console.log("Articles:", response.data); // 🔍 Debugging step
+        // console.log("Articles:", response.data); // 🔍 Debugging step
         setArticles(response.data);
       } catch (err) {
         console.error("Error fetching articles:", err);
